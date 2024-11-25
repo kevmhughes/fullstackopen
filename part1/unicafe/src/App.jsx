@@ -1,93 +1,71 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 const Header = ({ title }) => {
-  return (
-    <h1>
-      {title}
-    </h1>
-  )
-}
+  return <h1>{title}</h1>;
+};
 
-const GoodFeedbackButton = ({handleGoodClick}) => {
+const ClickButton = ({ handler, text }) => {
   return (
     <div>
-      <button onClick={handleGoodClick}>
-        good
-      </button>
+      <button onClick={handler}>{text}</button>
     </div>
-  )
-}
+  );
+};
 
-const NeutralFeedbackButton = ({handleNeutralClick}) => {
+const Stat = ({ name, value }) => {
   return (
     <div>
-      <button onClick={handleNeutralClick}>
-        neutral
-      </button>
+      {name}: {value}
     </div>
-  )
-}
-
-const BadFeedbackButton = ({handleBadClick}) => {
-  return (
-    <div>
-      <button onClick={handleBadClick}>
-        bad
-      </button>
-    </div>
-  )
-}
+  );
+};
 
 const Statistics = ({ title, good, neutral, bad }) => {
   const statsStyle = {
-    display: 'flex',
-    flexDirection: 'column', // To stack the items vertically
+    display: "flex",
+    flexDirection: "column",
   };
+
+  const total = good + neutral + bad;
+  const average = total == 0 ? 0 : ((good - bad) / total).toFixed(2);
+  const goodAsPercentage = total == 0 ? 0 : ((good / total) * 100).toFixed(2);
+
   return (
     <div style={statsStyle}>
       <h2>{title}</h2>
-      <div>Good: {good}</div>
-      <div>Neutral: {neutral}</div>
-      <div>Bad: {bad}</div>
+      <Stat name="Good" value={good} />
+      <Stat name="Neutral" value={neutral} />
+      <Stat name="Bad" value={bad} />
+      <Stat name="All" value={total} />
+      <Stat name="Average" value={average} />
+      <Stat name="Percentage of good votes" value={goodAsPercentage} />
     </div>
-  )
-}
+  );
+};
 
 const App = () => {
   // save clicks of each button to its own state
-  const [good, setGood] = useState(0)
-  const [neutral, setNeutral] = useState(0)
-  const [bad, setBad] = useState(0)
-
-  const handleGoodClick = () => setGood(good + 1)
-  const handleNeutralClick = () => setNeutral(neutral + 1)
-  const handleBadClick = () => setBad(bad + 1)
-
-  const header = "Give Feedback"
-  const section = "Statistics"
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
 
   const appStyle = {
-    display: 'flex',
-    flexDirection: 'column', // To stack the items vertically
-    gap: "4px"
+    display: "flex",
+    flexDirection: "column", // To stack the items vertically
+    gap: "4px",
   };
 
   return (
     <div>
-      <Header title={header}/>
+      <Header title="Give Feedback" />
       <div style={appStyle}>
-      <GoodFeedbackButton handleGoodClick={handleGoodClick}/>
-      <NeutralFeedbackButton handleNeutralClick={handleNeutralClick}/>
-      <BadFeedbackButton handleBadClick={handleBadClick}/>
+        <ClickButton handler={() => setGood(good + 1)} text="good" />
+        <ClickButton handler={() => setNeutral(neutral + 1)} text="neutral" />
+        <ClickButton handler={() => setBad(bad + 1)} text="bad" />
       </div>
-      <Statistics 
-       title={section}
-       good={good}
-       neutral={neutral}
-       bad={bad}
-      />
+      <Statistics title="Statistics" good={good} neutral={neutral} bad={bad} />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
