@@ -4,7 +4,7 @@ const Header = ({ title }) => {
   return <h1>{title}</h1>;
 };
 
-const ClickButton = ({ handler, text }) => {
+const Button = ({ handler, text }) => {
   return (
     <div>
       <button onClick={handler}>{text}</button>
@@ -12,7 +12,7 @@ const ClickButton = ({ handler, text }) => {
   );
 };
 
-const Stat = ({ name, value }) => {
+const StatisticLine = ({ name, value }) => {
   return (
     <div>
       {name}: {value}
@@ -34,12 +34,15 @@ const Statistics = ({ title, good, neutral, bad }) => {
     return (
       <div style={statsStyle}>
         <h2>{title}</h2>
-        <Stat name="Good" value={good} />
-        <Stat name="Neutral" value={neutral} />
-        <Stat name="Bad" value={bad} />
-        <Stat name="All" value={total} />
-        <Stat name="Average" value={average} />
-        <Stat name="Percentage of good votes" value={goodAsPercentage} />
+        <StatisticLine name="Good" value={good} />
+        <StatisticLine name="Neutral" value={neutral} />
+        <StatisticLine name="Bad" value={bad} />
+        <StatisticLine name="All" value={total} />
+        <StatisticLine name="Average" value={average} />
+        <StatisticLine
+          name="Percentage of good votes"
+          value={goodAsPercentage}
+        />
       </div>
     );
   } else {
@@ -63,9 +66,9 @@ const App = () => {
     <div>
       <Header title="Give Feedback" />
       <div style={appStyle}>
-        <ClickButton handler={() => setGood(good + 1)} text="good" />
-        <ClickButton handler={() => setNeutral(neutral + 1)} text="neutral" />
-        <ClickButton handler={() => setBad(bad + 1)} text="bad" />
+        <Button handler={() => setGood(good + 1)} text="good" />
+        <Button handler={() => setNeutral(neutral + 1)} text="neutral" />
+        <Button handler={() => setBad(bad + 1)} text="bad" />
       </div>
       <Statistics title="Statistics" good={good} neutral={neutral} bad={bad} />
     </div>
