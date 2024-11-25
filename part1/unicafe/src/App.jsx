@@ -14,35 +14,32 @@ const Button = ({ handler, text }) => {
 
 const StatisticLine = ({ name, value }) => {
   return (
-    <div>
-      {name}: {value}
-    </div>
+    <tr>
+      <td>{name}:</td>
+      <td>{value}</td>
+    </tr>
   );
 };
 
 const Statistics = ({ title, good, neutral, bad }) => {
-  const statsStyle = {
-    display: "flex",
-    flexDirection: "column",
-  };
-
   const total = good + neutral + bad;
   const average = total == 0 ? 0 : ((good - bad) / total).toFixed(2);
   const goodAsPercentage = total == 0 ? 0 : ((good / total) * 100).toFixed(2);
 
   if (total > 0) {
     return (
-      <div style={statsStyle}>
+      <div>
         <h2>{title}</h2>
-        <StatisticLine name="Good" value={good} />
-        <StatisticLine name="Neutral" value={neutral} />
-        <StatisticLine name="Bad" value={bad} />
-        <StatisticLine name="All" value={total} />
-        <StatisticLine name="Average" value={average} />
-        <StatisticLine
-          name="Percentage of good votes"
-          value={goodAsPercentage}
-        />
+        <table>
+          <tbody>
+            <StatisticLine name="Good" value={good} />
+            <StatisticLine name="Neutral" value={neutral} />
+            <StatisticLine name="Bad" value={bad} />
+            <StatisticLine name="All" value={total} />
+            <StatisticLine name="Average" value={average} />
+            <StatisticLine name="Positive" value={goodAsPercentage} />
+          </tbody>
+        </table>
       </div>
     );
   } else {
