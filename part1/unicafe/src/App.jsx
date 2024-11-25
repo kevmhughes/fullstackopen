@@ -27,8 +27,8 @@ const Statistics = ({ title, good, neutral, bad }) => {
   };
 
   const total = good + neutral + bad;
-  const average = total == 0 ? 0 : ((good - bad) / total).toFixed(2);
-  const goodAsPercentage = total == 0 ? 0 : ((good / total) * 100).toFixed(2);
+  const average = total == 0 ? 0 : ((good - bad)/total).toFixed(2);
+  const goodAsPercentage = total == 0 ? 0 : ((good/total) * 100).toFixed(2);
 
   return (
     <div style={statsStyle}>
