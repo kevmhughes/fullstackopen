@@ -4,6 +4,10 @@ const Button = ({ text, onClick }) => {
   return <button onClick={onClick}>{text}</button>;
 };
 
+const PopularVote = ({ popularVote }) => {
+  return <p>{popularVote}</p>;
+};
+
 const App = () => {
   const anecdotes = [
     "If it hurts, do it more often.",
@@ -21,22 +25,33 @@ const App = () => {
   const [vote, setVote] = useState(zeroFilledArray);
   const text = "next anecdote";
 
+  // produces a random number from 0 to the anecdotes.length which is later used to select a random anecdote
   const handleRandomNumber = () => {
     const randomNumber = Math.floor(Math.random() * anecdotes.length);
     setSelected(randomNumber);
   };
 
+  // makes a copy of the state array (vote) and then handles the vote count
   const handleVote = () => {
     const newVote = [...vote];
     newVote[selected] += 1;
     setVote(newVote);
   };
 
+  // finds the (first) highest number of votes in the array
+  const highestVote = Math.max(...vote);
+  // displays the most popular anecdote
+  const popularAnecdote =
+    highestVote == 0
+      ? "There are no votes at the moment"
+      : anecdotes[vote.indexOf(highestVote)];
+
   return (
     <div>
       <p>{anecdotes[selected]}</p>
       <Button text="vote" onClick={handleVote} />
       <Button text={text} onClick={handleRandomNumber} />
+      <PopularVote popularVote={popularAnecdote} />
     </div>
   );
 };
