@@ -27,20 +27,24 @@ const Statistics = ({ title, good, neutral, bad }) => {
   };
 
   const total = good + neutral + bad;
-  const average = total == 0 ? 0 : ((good - bad)/total).toFixed(2);
-  const goodAsPercentage = total == 0 ? 0 : ((good/total) * 100).toFixed(2);
+  const average = total == 0 ? 0 : ((good - bad) / total).toFixed(2);
+  const goodAsPercentage = total == 0 ? 0 : ((good / total) * 100).toFixed(2);
 
-  return (
-    <div style={statsStyle}>
-      <h2>{title}</h2>
-      <Stat name="Good" value={good} />
-      <Stat name="Neutral" value={neutral} />
-      <Stat name="Bad" value={bad} />
-      <Stat name="All" value={total} />
-      <Stat name="Average" value={average} />
-      <Stat name="Percentage of good votes" value={goodAsPercentage} />
-    </div>
-  );
+  if (total > 0) {
+    return (
+      <div style={statsStyle}>
+        <h2>{title}</h2>
+        <Stat name="Good" value={good} />
+        <Stat name="Neutral" value={neutral} />
+        <Stat name="Bad" value={bad} />
+        <Stat name="All" value={total} />
+        <Stat name="Average" value={average} />
+        <Stat name="Percentage of good votes" value={goodAsPercentage} />
+      </div>
+    );
+  } else {
+    return <p>No feedback given</p>;
+  }
 };
 
 const App = () => {
