@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Filter from "./components/Filter";
+import Form from "./components/Form";
+import List from "./components/List";
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -8,16 +11,17 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
 
+  // Handle name change input
   const handleNameChange = (event) => {
-    console.log(event.target.value);
     setNewName(event.target.value);
   };
 
+  // Handle number change input
   const handleNumberChange = (event) => {
-    console.log(event.target.value);
     setNewNumber(event.target.value);
   };
 
+  // Handle adding a new person to the phonebook
   const handleAddName = (event) => {
     event.preventDefault();
     const newNameObject = {
@@ -35,7 +39,8 @@ const App = () => {
       setFilteredPersons([...persons, newNameObject]);
     }
   };
-
+  
+  // Handle filtering the phonebook by name 
   const handleFilteredPersonsListChange = (event) => {
     const filteredPersons = persons.filter((person) =>
       person.name.toLowerCase().includes(event.target.value.toLowerCase())
@@ -46,57 +51,19 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div style={{ display: "flex", gap: "4px" }}>
-        filter shown with:
-        <input
-          type="text"
-          onChange={handleFilteredPersonsListChange}
-          placeholder="Search by name"
-        />
-      </div>
+      <Filter
+        handleFilteredPersonsListChange={handleFilteredPersonsListChange}
+      />
       <h2>Add a new number</h2>
-      <form
-        onSubmit={handleAddName}
-        style={{
-          display: "flex ",
-          flexDirection: "column",
-          gap: "4px",
-          width: "150px",
-        }}
-      >
-        <div>
-          <div style={{ display: "flex", gap: "4px" }}>
-            name:
-            <input
-              style={{ marginBottom: "4px" }}
-              type="text"
-              value={newName}
-              onChange={handleNameChange}
-              placeholder="Write a name here..."
-            />
-          </div>
-          <div style={{ display: "flex", gap: "4px" }}>
-            number:
-            <input
-              type="text"
-              value={newNumber}
-              onChange={handleNumberChange}
-              placeholder="Write a number here..."
-            />
-          </div>
-        </div>
-        <div>
-          <button type="submit" disabled={!newName || !newNumber}>
-            add
-          </button>
-        </div>
-      </form>
+      <Form
+        handleAddName={handleAddName}
+        handleNameChange={handleNameChange}
+        handleNumberChange={handleNumberChange}
+        newNumber={newNumber}
+        newName={newName}
+      />
       <h2>Numbers</h2>
-      {filteredPersons.map((person) => (
-        <div key={person.name}>
-          {person.name}: {person.number}
-        </div>
-      ))}
+      <List filteredPersons={filteredPersons}/>
     </div>
   );
 };
