@@ -1,15 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import Filter from "./components/Filter";
 import Form from "./components/Form";
 import List from "./components/List";
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-1234567" },
-  ]);
+  const [persons, setPersons] = useState([]);
   const [filteredPersons, setFilteredPersons] = useState(persons);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+
+  // the initial state of the data is fetched from json-server using the axios-library.
+  useEffect(() => {
+    console.log("effect");
+    axios.get("http://localhost:3001/persons").then((response) => {
+      console.log("promise fulfilled");
+      setPersons(response.data);
+    });
+  }, []);
+  console.log("render", persons.length, "persons");
+
+  useEffect(() => {
+    setFilteredPersons(persons);
+  }, [persons]); // Update filteredPersons when persons change
 
   // Handle name change input
   const handleNameChange = (event) => {
@@ -39,8 +52,8 @@ const App = () => {
       setFilteredPersons([...persons, newNameObject]);
     }
   };
-  
-  // Handle filtering the phonebook by name 
+
+  // Handle filtering the phonebook by name
   const handleFilteredPersonsListChange = (event) => {
     const filteredPersons = persons.filter((person) =>
       person.name.toLowerCase().includes(event.target.value.toLowerCase())
@@ -63,7 +76,7 @@ const App = () => {
         newName={newName}
       />
       <h2>Numbers</h2>
-      <List filteredPersons={filteredPersons}/>
+      <List filteredPersons={filteredPersons} />
     </div>
   );
 };
