@@ -5,7 +5,7 @@ const List = ({ filteredPersons }) => {
   return (
     <>
       {filteredPersons.map((person) => (
-        <Person person={person} />
+        <Person person={person} key={person.name}/>
       ))}
     </>
   );
