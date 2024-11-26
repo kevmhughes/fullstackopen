@@ -1,11 +1,24 @@
 import { useState } from "react";
 
+const Title = ( {text} ) => {
+  return <h1>{text}</h1>
+}
+
 const Button = ({ text, onClick }) => {
   return <button onClick={onClick}>{text}</button>;
 };
 
-const PopularVote = ({ popularVote }) => {
-  return <p>{popularVote}</p>;
+const Votes = ({ votes }) => {
+  return <p>This anecdote has {votes} votes</p>
+}
+
+const Anecdote = ({ anecdote, votes }) => {
+  return (
+    <>
+      <p>{anecdote}</p>
+      {votes !== undefined && <Votes votes={votes} />}
+    </>
+  );
 };
 
 const App = () => {
@@ -23,7 +36,10 @@ const App = () => {
   const zeroFilledArray = new Array(anecdotes.length).fill(0);
   const [selected, setSelected] = useState(0);
   const [vote, setVote] = useState(zeroFilledArray);
-  const text = "next anecdote";
+  const buttonText = "next anecdote";
+  const titleOne = "Anecdote of the day"
+  const titleTwo = "Anecdote with most votes"
+
 
   // produces a random number from 0 to the anecdotes.length which is later used to select a random anecdote
   const handleRandomNumber = () => {
@@ -38,20 +54,31 @@ const App = () => {
     setVote(newVote);
   };
 
-  // finds the (first) highest number of votes in the array
+  // displays the vote count of the the random anecdote
+  const selectedVoteCount = vote[selected]
+
+  // 1) finds the (first) highest number of votes in the array
+  // 2) displays the vote count for the popular anecdote
   const highestVote = Math.max(...vote);
   // displays the most popular anecdote
   const popularAnecdote =
-    highestVote == 0
-      ? "There are no votes at the moment"
+    highestVote === 0
+      ? "There are no votes at the moment."
       : anecdotes[vote.indexOf(highestVote)];
 
   return (
     <div>
-      <p>{anecdotes[selected]}</p>
+      <Title text={titleOne}/>
+      <Anecdote anecdote={anecdotes[selected]} votes={selectedVoteCount}/>
       <Button text="vote" onClick={handleVote} />
-      <Button text={text} onClick={handleRandomNumber} />
-      <PopularVote popularVote={popularAnecdote} />
+      <Button text={buttonText} onClick={handleRandomNumber} />
+
+      <Title text={titleTwo}/>
+      {highestVote > 0 ? (
+        <Anecdote anecdote={popularAnecdote} votes={highestVote} />
+      ) : (
+        <Anecdote anecdote={popularAnecdote} />
+      )}
     </div>
   );
 };
