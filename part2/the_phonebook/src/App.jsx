@@ -4,6 +4,7 @@ const App = () => {
   const [persons, setPersons] = useState([
     { name: "Arto Hellas", number: "040-1234567" },
   ]);
+  const [filteredPersons, setFilteredPersons] = useState(persons);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
 
@@ -31,12 +32,29 @@ const App = () => {
       setPersons([...persons, newNameObject]);
       setNewName("");
       setNewNumber("");
+      setFilteredPersons([...persons, newNameObject]);
     }
+  };
+
+  const handleFilteredPersonsListChange = (event) => {
+    const filteredPersons = persons.filter((person) =>
+      person.name.toLowerCase().includes(event.target.value.toLowerCase())
+    );
+    setFilteredPersons(filteredPersons);
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <div style={{ display: "flex", gap: "4px" }}>
+        filter shown with:
+        <input
+          type="text"
+          onChange={handleFilteredPersonsListChange}
+          placeholder="Search by name"
+        />
+      </div>
+      <h2>Add a new number</h2>
       <form
         onSubmit={handleAddName}
         style={{
@@ -68,11 +86,13 @@ const App = () => {
           </div>
         </div>
         <div>
-          <button type="submit" disabled={!newName || !newNumber}>add</button>
+          <button type="submit" disabled={!newName || !newNumber}>
+            add
+          </button>
         </div>
       </form>
       <h2>Numbers</h2>
-      {persons.map((person) => (
+      {filteredPersons.map((person) => (
         <div key={person.name}>
           {person.name}: {person.number}
         </div>
