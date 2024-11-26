@@ -2,7 +2,7 @@ import { useState } from "react";
 
 const App = () => {
   const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
-  const [newName, setNewName] = useState("Write a name here...");
+  const [newName, setNewName] = useState("");
 
   const handleNameChange = (event) => {
     console.log(event.target.value);
@@ -14,18 +14,28 @@ const App = () => {
     const newNameObject = {
       name: newName,
     };
-    setPersons([...persons, newNameObject]);
-    setNewName("");
-  };
 
-  console.log("persons:", persons);
+    if (persons.some((person) => person.name === newNameObject.name)) {
+      alert(`${newNameObject.name} is already added to phonebook`);
+      return;
+    } else {
+      setPersons([...persons, newNameObject]);
+      setNewName("");
+    }
+  };
 
   return (
     <div>
       <h2>Phonebook</h2>
       <form onSubmit={handleAddName}>
         <div>
-          name: <input value={newName} onChange={handleNameChange} />
+          name:
+          <input
+            type="text"
+            value={newName}
+            onChange={handleNameChange}
+            placeholder="Write a name here..."
+          />
         </div>
         <div>
           <button type="submit">add</button>
