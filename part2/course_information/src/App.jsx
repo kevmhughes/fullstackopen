@@ -1,6 +1,6 @@
 const Header = ({ course }) => <h1>{course}</h1>;
 
-const Total = ({ total }) => <p>total of exercises {total}</p>;
+const Total = ({ total }) => <b>total of exercises {total}</b>;
 
 const Part = ({ part }) => (
   <p>
@@ -10,54 +10,82 @@ const Part = ({ part }) => (
 
 const Content = ({ parts }) => (
   <>
-    <Part part={parts[0]} />
-    <Part part={parts[1]} />
-    <Part part={parts[2]} />
-    <Part part={parts[3]} />
+    {parts.map((part) => (
+      <Part key={part.id} part={part} />
+    ))}
   </>
 );
 
-const Course = ({ course, total }) => {
+const Course = ({ courses, total, title }) => {
   return (
-    <div>
-      <Header course={course.name} />
-      <Content parts={course.parts} />
-      <Total total={total} />
-    </div>
+    <>
+      <h1>{title}</h1>
+      <div>
+        {courses.map((course, i) => (
+          <div key={course.id}>
+            <Header course={course.name} />
+            <Content parts={course.parts} />
+            <Total total={total[i]} />
+          </div>
+        ))}
+      </div>
+    </>
   );
 };
 
 const App = () => {
-  const course = {
-    id: 1,
-    name: "Half Stack application development",
-    parts: [
-      {
-        name: "Fundamentals of React",
-        exercises: 10,
-        id: 1,
-      },
-      {
-        name: "Using props to pass data",
-        exercises: 7,
-        id: 2,
-      },
-      {
-        name: "State of a component",
-        exercises: 14,
-        id: 3,
-      },
-      {
-        name: "Redux",
-        exercises: 11,
-        id: 4,
-      },
-    ],
-  };
+  const courses = [
+    {
+      name: "Half Stack application development",
+      id: 1,
+      parts: [
+        {
+          name: "Fundamentals of React",
+          exercises: 10,
+          id: 1,
+        },
+        {
+          name: "Using props to pass data",
+          exercises: 7,
+          id: 2,
+        },
+        {
+          name: "State of a component",
+          exercises: 14,
+          id: 3,
+        },
+        {
+          name: "Redux",
+          exercises: 11,
+          id: 4,
+        },
+      ],
+    },
+    {
+      name: "Node.js",
+      id: 2,
+      parts: [
+        {
+          name: "Routing",
+          exercises: 3,
+          id: 1,
+        },
+        {
+          name: "Middlewares",
+          exercises: 7,
+          id: 2,
+        },
+      ],
+    },
+  ];
 
-  const total = course.parts.reduce((total, part) => total + part.exercises, 0);
+  const total = courses.map((course) =>
+    course.parts.reduce((total, part) => total + part.exercises, 0)
+  );
 
-  return <Course course={course} total={total} />;
+  const title = "Web Development Curriculum";
+
+  return <Course courses={courses} total={total} title={title} />;
 };
 
 export default App;
