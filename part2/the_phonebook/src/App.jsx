@@ -3,12 +3,16 @@ import personService from "./services/persons";
 import Filter from "./components/Filter";
 import Form from "./components/Form";
 import List from "./components/List";
+import Notification from "./components/Notification";
+import "./index.css"
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [filteredPersons, setFilteredPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [message, setMessage] = useState(null);
+  
 
   // AXIOS GET => the initial state of the data is fetched from json-server using the axios-library
   useEffect(() => {
@@ -71,6 +75,10 @@ const App = () => {
             );
             setNewName("");
             setNewNumber("");
+            setMessage("The number has been updated successfully!")
+            setTimeout(() => {
+              setMessage(null)
+            }, 3000)
           })
           .catch((error) => {
             console.error("Error updating person:", error);
@@ -90,6 +98,10 @@ const App = () => {
           setPersons([...persons, response.data]);
           setNewName("");
           setNewNumber("");
+          setMessage(`${response.data.name} has been added to the phonebook!`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 3000)
         })
         .catch((error) => {
           console.error("Error adding person:", error);
@@ -135,6 +147,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message}/>
       <Filter handleFilteredPersons={handleFilteredPersons} />
       <h2>Add a new number</h2>
       <Form

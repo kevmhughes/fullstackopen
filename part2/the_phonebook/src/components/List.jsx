@@ -7,7 +7,7 @@ const List = ({ filteredPersons, handleDeletePerson }) => {
   }
 
   return (
-    <>
+    <ul>
       {filteredPersons.map((person) => (
         <Person
           person={person}
@@ -15,7 +15,7 @@ const List = ({ filteredPersons, handleDeletePerson }) => {
           handleDeletePerson={handleDeletePerson}
         />
       ))}
-    </>
+    </ul>
   );
 };
 

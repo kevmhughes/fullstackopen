@@ -3,12 +3,10 @@ import Button from "./Button";
 
 const Person = ({ person, handleDeletePerson }) => {
   return (
-    <div style={{ display: "flex", gap: "4px" }}>
-      <div>
+    <li style={{ display: "flex", gap: "4px" }}>
         {person.name}: {person.number}
-      </div>
       <Button handleDeletePerson={() => handleDeletePerson(person.id)} />
-    </div>
+    </li>
   );
 };
 
