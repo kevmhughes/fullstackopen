@@ -1,10 +1,11 @@
-const Notification = ({ message }) => {
+const Notification = ({ message, messageCSS }) => {
+    console.log("message CSS:", messageCSS)
     if (message === null) {
       return null
     }
   
     return (
-      <div className='error'>
+      <div className={messageCSS}>
         {message}
       </div>
     )

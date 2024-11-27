@@ -12,7 +12,18 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [message, setMessage] = useState(null);
+  const [messageCSS, setMessageCSS] = useState("");
   
+  // Set a timeout to reset the message after 3 seconds
+  useEffect(() => {
+    if (message) {
+      const timeout = setTimeout(() => {
+        setMessage(null);
+        setMessageCSS("");
+      }, 3000);
+      return () => clearTimeout(timeout); // Cleanup the timeout when the component unmounts or when message changes
+    }
+  }, [message]); // Runs only when the message changes
 
   // AXIOS GET => the initial state of the data is fetched from json-server using the axios-library
   useEffect(() => {
@@ -57,7 +68,7 @@ const App = () => {
       );
       // Modify the phone number of the found person object
       const confirmUpdate = window.confirm(
-        `${newNameObject.name} is already added to the phonebook, replace the old number with a new one?`
+        `${newNameObject.name} is already in the phonebook, replace the old number with a new one?`
       );
 
       // AXIOS PUT => update the person object in the DB
@@ -75,13 +86,13 @@ const App = () => {
             );
             setNewName("");
             setNewNumber("");
-            setMessage("The number has been updated successfully!")
-            setTimeout(() => {
-              setMessage(null)
-            }, 3000)
+            setMessageCSS("successMessage")
+            setMessage(`The number for ${foundPerson.name} has been updated successfully.`)
           })
           .catch((error) => {
             console.error("Error updating person:", error);
+            setMessageCSS("errorMessage")
+            setMessage(`Error updating the number for ${foundPerson.name}.`)
           });
         return;
       } else {
@@ -98,13 +109,13 @@ const App = () => {
           setPersons([...persons, response.data]);
           setNewName("");
           setNewNumber("");
-          setMessage(`${response.data.name} has been added to the phonebook!`)
-          setTimeout(() => {
-            setMessage(null)
-          }, 3000)
+          setMessageCSS("successMessage")
+          setMessage(`${response.data.name} has been added to the phonebook.`)
         })
         .catch((error) => {
           console.error("Error adding person:", error);
+          setMessageCSS("errorMessage")
+          setMessage(`Error adding ${response.data.name}.`)
         });
     }
   };
@@ -124,6 +135,9 @@ const App = () => {
     );
 
     if (confirmDeletion) {
+      const foundPerson = persons.find(
+        (person) => person.id === id
+      );
       personService
         .remove(id)
         .then(() => {
@@ -135,9 +149,13 @@ const App = () => {
           // Update both persons and filteredPersons
           setPersons(updatedPersons);
           setFilteredPersons(updatedPersons); // Sync filteredPersons with updated persons list
+          setMessageCSS("successMessage")
+          setMessage(`${foundPerson.name} has been deleted from the phonebook.`)
         })
         .catch((error) => {
           console.error("Error deleting person:", error);
+          setMessageCSS("errorMessage")
+          setMessage(`Error deleting ${foundPerson.name}.`)
         });
     } else {
       console.log("deletion cancelled");
@@ -147,7 +165,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={message}/>
+      <Notification message={message} messageCSS={messageCSS}/>
       <Filter handleFilteredPersons={handleFilteredPersons} />
       <h2>Add a new number</h2>
       <Form
