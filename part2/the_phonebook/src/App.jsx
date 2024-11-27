@@ -6,16 +6,20 @@ import List from "./components/List";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
-  const [filteredPersons, setFilteredPersons] = useState(persons);
+  const [filteredPersons, setFilteredPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
 
-  // the initial state of the data is fetched from json-server using the axios-library.
+  // GET => the initial state of the data is fetched from json-server using the axios-library.
   useEffect(() => {
     console.log("effect");
     axios.get("http://localhost:3001/persons").then((response) => {
       console.log("promise fulfilled");
+      console.log("data", response.data)
       setPersons(response.data);
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
     });
   }, []);
   console.log("render", persons.length, "persons");
@@ -34,7 +38,7 @@ const App = () => {
     setNewNumber(event.target.value);
   };
 
-  // Handle adding a new person to the phonebook
+  // POST => Handle adding a new person to the phonebook
   const handleAddName = (event) => {
     event.preventDefault();
     const newNameObject = {
@@ -45,12 +49,21 @@ const App = () => {
     if (persons.some((person) => person.name === newNameObject.name)) {
       alert(`${newNameObject.name} is already added to phonebook`);
       return;
-    } else {
-      setPersons([...persons, newNameObject]);
+    } 
+
+    // Add the new person to the server
+    axios
+    .post("http://localhost:3001/persons", newNameObject)
+    .then((response) => {
+      console.log("person added", response.data);
+      // Add the new person to the list of persons in state
+      setPersons([...persons, response.data]);
       setNewName("");
       setNewNumber("");
-      setFilteredPersons([...persons, newNameObject]);
-    }
+    })
+    .catch((error) => {
+      console.error("Error adding person:", error);
+    });
   };
 
   // Handle filtering the phonebook by name
