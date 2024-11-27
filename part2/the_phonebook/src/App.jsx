@@ -12,19 +12,15 @@ const App = () => {
 
   // AXIOS GET => the initial state of the data is fetched from json-server using the axios-library
   useEffect(() => {
-    console.log("effect");
     personService
       .getAll()
       .then((response) => {
-        console.log("promise fulfilled");
-        console.log("data", response.data);
         setPersons(response.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   }, []);
-  console.log("render", persons.length, "persons");
 
   useEffect(() => {
     setFilteredPersons(persons);
@@ -40,32 +36,65 @@ const App = () => {
     setNewNumber(event.target.value);
   };
 
-  // AXIOS POST => Handle adding a new person to the phonebook
+  // Handle adding a new person to the phonebook/updating a number of an existing person
   const handleAddName = (event) => {
     event.preventDefault();
+
     const newNameObject = {
       name: newName,
       number: newNumber,
     };
 
+    // See if the name already exists in the DB
     if (persons.some((person) => person.name === newNameObject.name)) {
-      alert(`${newNameObject.name} is already added to phonebook`);
-      return;
-    }
+      // Get the person object if found in the DB
+      const foundPerson = persons.find(
+        (person) => person.name === newNameObject.name
+      );
+      // Modify the phone number of the found person object
+      const confirmUpdate = window.confirm(
+        `${newNameObject.name} is already added to the phonebook, replace the old number with a new one?`
+      );
 
-    // Add the new person to the server
-    personService
-      .create(newNameObject)
-      .then((response) => {
-        console.log("person added", response.data);
-        // Add the new person to the list of persons in state
-        setPersons([...persons, response.data]);
-        setNewName("");
-        setNewNumber("");
-      })
-      .catch((error) => {
-        console.error("Error adding person:", error);
-      });
+      // AXIOS PUT => update the person object in the DB
+      if (confirmUpdate) {
+        const updatedPerson = { ...foundPerson, number: newNameObject.number };
+        personService
+          .update(foundPerson.id, updatedPerson)
+          .then((response) => {
+            console.log("Person updated:", response.data);
+            // Update the local state with the new data
+            setPersons(
+              persons.map((person) =>
+                person.id !== foundPerson.id ? person : response.data
+              )
+            );
+            setNewName("");
+            setNewNumber("");
+          })
+          .catch((error) => {
+            console.error("Error updating person:", error);
+          });
+        return;
+      } else {
+        // If user cancels the update, do nothing
+        console.log("Update cancelled");
+        return;
+      }
+    } else {
+      // AXIOS POST => add the new person object to the DB
+      personService
+        .create(newNameObject)
+        .then((response) => {
+          console.log("person added", response.data);
+          setPersons([...persons, response.data]);
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((error) => {
+          console.error("Error adding person:", error);
+        });
+    }
   };
 
   // Handle filtering the phonebook by name
