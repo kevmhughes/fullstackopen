@@ -1,12 +1,12 @@
 import React from "react";
 
-const Filter = ({ handleFilteredPersonsListChange }) => {
+const Filter = ({ handleFilteredPersons }) => {
   return (
     <div style={{ display: "flex", gap: "4px" }}>
       filter shown with:
       <input
         type="text"
-        onChange={handleFilteredPersonsListChange}
+        onChange={handleFilteredPersons}
         placeholder="Search by name"
       />
     </div>
