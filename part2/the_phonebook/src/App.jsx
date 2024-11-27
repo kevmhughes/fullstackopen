@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import personService from "./services/persons"
 import Filter from "./components/Filter";
 import Form from "./components/Form";
 import List from "./components/List";
@@ -13,7 +13,9 @@ const App = () => {
   // GET => the initial state of the data is fetched from json-server using the axios-library.
   useEffect(() => {
     console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
+    personService
+    .getAll()
+    .then((response) => {
       console.log("promise fulfilled");
       console.log("data", response.data)
       setPersons(response.data);
@@ -52,8 +54,8 @@ const App = () => {
     } 
 
     // Add the new person to the server
-    axios
-    .post("http://localhost:3001/persons", newNameObject)
+    personService
+    .create(newNameObject)
     .then((response) => {
       console.log("person added", response.data);
       // Add the new person to the list of persons in state
