@@ -3,8 +3,19 @@ const time = require("./time");
 const morgan = require("morgan");
 const app = express();
 
-// use middleware
-app.use(morgan("tiny"));
+morgan.token("req-body", (req) => {
+  // Log the body for POST
+  if (req.method === "POST") {
+    return JSON.stringify(req.body);
+  }
+  return "";
+});
+
+// Use morgan with custom format to log method, url, headers, and req body
+app.use(
+  morgan(":method :url :status :res[content-length] :req[headers] :req-body")
+);
+
 app.use(express.json());
 
 let persons = [
