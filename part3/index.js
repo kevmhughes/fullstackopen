@@ -1,7 +1,10 @@
 const express = require("express");
 const time = require("./time");
+const morgan = require("morgan");
 const app = express();
 
+// use middleware
+app.use(morgan("tiny"));
 app.use(express.json());
 
 let persons = [
@@ -120,11 +123,9 @@ app.post("/api/persons", (req, res) => {
     const nameExists = persons.find((person) => person.name === name);
 
     if (nameExists) {
-      return res
-        .status(409)
-        .json({
-          error: "Sorry, this contact name is already in the phonebook.",
-        });
+      return res.status(409).json({
+        error: "Sorry, this contact name is already in the phonebook.",
+      });
     }
 
     // Generate a unique ID
