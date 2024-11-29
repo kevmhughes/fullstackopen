@@ -1,9 +1,7 @@
 import React from "react";
 
-const Button = ({ handleClick, toggleShowButton }) => {
-  return (
-    <button onClick={handleClick}>{toggleShowButton ? "show" : "hide"}</button>
-  );
+const Button = ({ handleClick }) => {
+  return <button onClick={handleClick}>show</button>;
 };
 
 export default Button;

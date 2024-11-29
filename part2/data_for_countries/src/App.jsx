@@ -1,21 +1,21 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import countryService from "./services/countries";
-import Filter from "./components/Filter";
+import React, { useEffect, useState } from "react";
 import List from "./components/List";
+import Filter from "./components/Filter";
+import Services from "./services/services";
 
 const App = () => {
-  const [countries, setCountries] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredCountry, setFilteredCountry] = useState([]);
-  const [message, setMessage] = useState("");
-  const [toggleShowButton, setToggleShowButton] = useState(true);
-  const [showCountry, setShowCountry] = useState([]);
+  const weatherAPI = import.meta.env.VITE_OPEN_WEATHER_KEY;
 
-  // Fetches country data from the API and stores it in the state
+  const [countries, setCountries] = useState([]);
+  const [filteredCountry, setFilteredCountry] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [message, setMessage] = useState("");
+  const [weather, setWeather] = useState({});
+  const [city, setCity] = useState("");
+
+  // Fetches all countries
   useEffect(() => {
-    countryService
-      .getAllCountries()
+    Services.getAllCountries()
       .then((response) => {
         setCountries(response.data);
       })
@@ -24,7 +24,32 @@ const App = () => {
       });
   }, []);
 
-  // Sets the message based on search term and filtered countries to inform the user
+  // Fetches the weather data from https://openweathermap.org
+  useEffect(() => {
+    if (!city) return;
+    Services.getWeatherData(city, weatherAPI)
+      .then((response) => {
+        setWeather(response.data);
+      })
+      .catch((err) => {
+        console.error("Error fetching weather data:", err);
+      });
+  }, [city]);
+
+  // Filters countries
+  useEffect(() => {
+    const countriesFiltered = countries.filter((country) => {
+      return country.name.common
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+    });
+    setFilteredCountry(countriesFiltered);
+    if (countriesFiltered.length === 1) {
+      setCity(countriesFiltered[0].capital[0].toString());
+    }
+  }, [searchTerm]);
+
+  // Sets countries based on search results
   useEffect(() => {
     if (searchTerm.length === 0) {
       setMessage("Enter a search term.");
@@ -37,34 +62,14 @@ const App = () => {
     }
   }, [searchTerm, filteredCountry]);
 
-  // Filters countries based on the search term and updates the filteredCountry state
-  useEffect(() => {
-    const filteredCountries = countries.filter((country) => {
-      return country.name.common
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-    });
-    setFilteredCountry(filteredCountries);
-  }, [searchTerm, countries]);
-
-  // Handles the filter input change, and clears the showCountry view if it's active
   const handleFilter = (event) => {
     setSearchTerm(event.target.value);
-    if (!toggleShowButton) {
-      setToggleShowButton(!toggleShowButton);
-      setShowCountry([]);
-    }
+    setCity("");
   };
 
-  // toggles showCountry view/country list and button text (show/hide)
-  const handleClick = (item) => {
-    if (toggleShowButton) {
-      setToggleShowButton(!toggleShowButton);
-      setShowCountry(item);
-    } else {
-      setToggleShowButton(!toggleShowButton);
-      setShowCountry([]);
-    }
+  const handleClick = (country) => {
+    setFilteredCountry([country]);
+    setCity([country][0].capital[0].toString());
   };
 
   return (
@@ -74,8 +79,7 @@ const App = () => {
         filteredCountry={filteredCountry}
         message={message}
         handleClick={handleClick}
-        showCountry={showCountry}
-        toggleShowButton={toggleShowButton}
+        weather={weather}
       />
     </div>
   );
