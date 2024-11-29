@@ -31,21 +31,21 @@ const timestamp = time.getFormattedTimestamp();
 
 app.get("/", (req, res) => {
   try {
-    res.status(200).send("<h1>Hello World!</h1>");
+    return res.status(200).send("<h1>Hello World!</h1>");
   } catch (error) {
     // If an error occurs, send a 500 status code (Internal Server Error)
     console.error(error);
-    res.status(500).json({ error: "An error occurred" });
+    return res.status(500).json({ error: "An error occurred" });
   }
 });
 
 app.get("/api/persons", (req, res) => {
   try {
-    res.status(200).json(persons);
+    return res.status(200).json(persons);
   } catch (error) {
     // If an error occurs, send a 500 status code (Internal Server Error)
     console.error(error);
-    res
+    return res
       .status(500)
       .json({ error: "An error occurred while fetching the data" });
   }
@@ -54,19 +54,19 @@ app.get("/api/persons", (req, res) => {
 app.get("/api/info", (req, res) => {
   try {
     if (persons.length === 1) {
-      res.status(200).send(`
+      return res.status(200).send(`
         <h1>Phonebook has info for ${persons.length} person</h1>
         <p>${timestamp}</p>`);
     }
 
     if (persons.length > 1) {
-      res.status(200).send(`
+      return res.status(200).send(`
         <h1>Phonebook has info for ${persons.length} persons</h1>
         <p>${timestamp}</p>`);
     }
   } catch (error) {
     console.error(error);
-    res
+    return res
       .status(500)
       .json({ error: "An error occurred while fetching the information" });
   }
@@ -83,7 +83,7 @@ app.get("/api/persons/:id", (req, res) => {
     res.status(200).json(personData);
   } catch (error) {
     console.error(error);
-    res
+    return res
       .status(500)
       .json({ error: "An error occurred while fetching the data" });
   }
@@ -102,7 +102,7 @@ app.delete("/api/persons/:id", (req, res) => {
     res.status(204).json({ message: `Person with id ${id} deleted` });
   } catch (error) {
     console.error(error);
-    res
+    return res
       .status(500)
       .json({ error: "An error occurred while deleting the data" });
   }
@@ -117,6 +117,15 @@ app.post("/api/persons", (req, res) => {
         .status(400)
         .json({ error: "Both name and number are required" });
     }
+    const nameExists = persons.find((person) => person.name === name);
+
+    if (nameExists) {
+      return res
+        .status(409)
+        .json({
+          error: "Sorry, this contact name is already in the phonebook.",
+        });
+    }
 
     // Generate a unique ID
     const id = `${Math.floor(Math.random() * 1000000)}-${persons.length}`;
@@ -129,13 +138,15 @@ app.post("/api/persons", (req, res) => {
 
     persons.push(newPerson);
 
-    res.status(201).json({
-      message: "a new person has been added to the phonebook",
+    return res.status(201).json({
+      message: `${name} has been added to the phonebook`,
       person: newPerson,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "An error occurred while posting the data" });
+    return res
+      .status(500)
+      .json({ error: "An error occurred while posting the data" });
   }
 });
 
