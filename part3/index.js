@@ -4,7 +4,7 @@ const app = express();
 
 app.use(express.json());
 
-let people = [
+let persons = [
   {
     id: "1",
     name: "Arto Hellas",
@@ -29,30 +29,61 @@ let people = [
 
 const timestamp = time.getFormattedTimestamp()
 
-app.get("/", (request, response) => {
-  response.send("<h1>Hello World!</h1>");
-});
-
-app.get("/api/persons", (request, response) => {
-  response.json(notes);
-});
-
-app.get("/api/info", (request, response) => {
-  if (people.length === 1) {
-    response.send(`
-      <h1>Phonebook has info for ${people.length} person</h1>
-      <p>${timestamp}</p>`
-    );
-  } 
-  
-  if ((people.length > 1)){
-    response.send(`
-      <h1>Phonebook has info for ${people.length} people</h1>
-      <p>${timestamp}</p>`
-    );
+app.get("/", (req, res) => {
+  try {
+    res.status(200).send("<h1>Hello World!</h1>");  
+  } catch (error) {
+    // If an error occurs, send a 500 status code (Internal Server Error)
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred' });
   }
-
 });
+
+app.get("/api/persons", (req, res) => {
+  try {
+    res.status(200).json(persons);  
+  } catch (error) {
+     // If an error occurs, send a 500 status code (Internal Server Error)
+     console.error(error);
+     res.status(500).json({ error: 'An error occurred while fetching the data' });
+  }
+});
+
+app.get("/api/info", (req, res) => {
+  try {
+    if (persons.length === 1) {
+      res.status(200).send(`
+        <h1>Phonebook has info for ${persons.length} person</h1>
+        <p>${timestamp}</p>`
+      );
+    } 
+    
+    if ((persons.length > 1)){
+      res.status(200).send(`
+        <h1>Phonebook has info for ${persons.length} persons</h1>
+        <p>${timestamp}</p>`
+      );
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while fetching the information' });
+  }
+});
+
+app.get("/api/persons/:id", (req, res) => {
+  const id = req.params.id
+  const personData = persons.find((person) => person.id === id)
+  try {
+    // Check if the person was found
+    if (!personData) {
+      return res.status(404).json({ error: 'Person not found' });
+    }
+    res.status(200).json(personData)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while fetching the data' });
+  }
+})
 
 const PORT = 3001;
 app.listen(PORT, () => {
