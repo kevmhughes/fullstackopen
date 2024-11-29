@@ -1,40 +1,60 @@
 const express = require("express");
+const time = require("./time")
 const app = express();
 
-app.use(express.json())
+app.use(express.json());
 
-let notes = [
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
+let people = [
+  {
+    id: "1",
+    name: "Arto Hellas",
+    number: "040-123456",
+  },
+  {
+    id: "2",
+    name: "Ada Lovelace",
+    number: "39-44-5323523",
+  },
+  {
+    id: "3",
+    name: "Dan Abramov",
+    number: "12-43-234345",
+  },
+  {
+    id: "4",
+    name: "Mary Poppendieck",
+    number: "39-23-6423122",
+  },
+];
 
-  app.get('/', (request, response) => {
-    response.send('<h1>Hello World!</h1>')
-  })
+const timestamp = time.getFormattedTimestamp()
+
+app.get("/", (request, response) => {
+  response.send("<h1>Hello World!</h1>");
+});
+
+app.get("/api/persons", (request, response) => {
+  response.json(notes);
+});
+
+app.get("/api/info", (request, response) => {
+  if (people.length === 1) {
+    response.send(`
+      <h1>Phonebook has info for ${people.length} person</h1>
+      <p>${timestamp}</p>`
+    );
+  } 
   
-  app.get('/api/persons', (request, response) => {
-    response.json(notes)
-  })
+  if ((people.length > 1)){
+    response.send(`
+      <h1>Phonebook has info for ${people.length} people</h1>
+      <p>${timestamp}</p>`
+    );
+  }
 
-const PORT = 3001
+});
+
+const PORT = 3001;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+  console.log(`Server running on port ${PORT}`);
+});
