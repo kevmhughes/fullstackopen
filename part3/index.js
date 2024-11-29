@@ -108,6 +108,37 @@ app.delete("/api/persons/:id", (req, res) => {
   }
 });
 
+app.post("/api/persons", (req, res) => {
+  try {
+    const { name, number } = req.body;
+    // Basic validation: Ensure name and number are provided
+    if (!name || !number) {
+      return res
+        .status(400)
+        .json({ error: "Both name and number are required" });
+    }
+
+    // Generate a unique ID
+    const id = `${Math.floor(Math.random() * 1000000)}-${persons.length}`;
+
+    const newPerson = {
+      id: id,
+      name,
+      number,
+    };
+
+    persons.push(newPerson);
+
+    res.status(201).json({
+      message: "a new person has been added to the phonebook",
+      person: newPerson,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred while posting the data" });
+  }
+});
+
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
