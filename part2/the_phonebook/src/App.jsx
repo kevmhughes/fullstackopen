@@ -13,6 +13,8 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [message, setMessage] = useState(null);
   const [messageCSS, setMessageCSS] = useState("");
+  // this is to trigger getAll useEffect when adding contact to DB
+  const [addedToDb, setAddedToDb] = useState(false);
   
   // Set a timeout to reset the message after 3 seconds
   useEffect(() => {
@@ -35,10 +37,11 @@ const App = () => {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, []);
+  }, [addedToDb]);
 
   useEffect(() => {
     setFilteredPersons(persons);
+    setAddedToDb(false)
   }, [persons]); // Update filteredPersons when persons change
 
   // Handle name change input
@@ -54,6 +57,7 @@ const App = () => {
   // Handle adding a new person to the phonebook/updating a number of an existing person
   const handleAddName = (event) => {
     event.preventDefault();
+
 
     const newNameObject = {
       name: newName,
@@ -107,6 +111,7 @@ const App = () => {
         .then((response) => {
           console.log("person added", response.data);
           setPersons([...persons, response.data]);
+          setAddedToDb(true)
           setNewName("");
           setNewNumber("");
           setMessageCSS("successMessage")

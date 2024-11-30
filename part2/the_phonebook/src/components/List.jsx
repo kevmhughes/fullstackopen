@@ -5,13 +5,13 @@ const List = ({ filteredPersons, handleDeletePerson }) => {
   if (!Array.isArray(filteredPersons)) {
     return <div>Error: filteredPersons is not an array!</div>;
   }
-
+  console.log(filteredPersons)
   return (
     <ul>
       {filteredPersons.map((person) => (
         <Person
-          person={person}
           key={person.name}
+          person={person}
           handleDeletePerson={handleDeletePerson}
         />
       ))}
