@@ -1,5 +1,6 @@
 import axios from "axios";
 const baseUrl = "https://phonebook-backend-fullstackopen-1.onrender.com/api/persons";
+/* const baseUrl = "http://localhost:3001/api/persons"; */
 
 const getAll = () => {
   return axios.get(baseUrl);
@@ -11,6 +12,7 @@ const create = (newObject) => {
 
 const remove = (id) => {
   return axios.delete(`${baseUrl}/${id}`);
+
 };
 
 const update = (id, newObject) => {

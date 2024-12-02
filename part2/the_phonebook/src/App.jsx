@@ -4,7 +4,7 @@ import Filter from "./components/Filter";
 import Form from "./components/Form";
 import List from "./components/List";
 import Notification from "./components/Notification";
-import "./index.css"
+import "./index.css";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -15,7 +15,7 @@ const App = () => {
   const [messageCSS, setMessageCSS] = useState("");
   // this is to trigger getAll useEffect when adding contact to DB
   const [addedToDb, setAddedToDb] = useState(false);
-  
+
   // Set a timeout to reset the message after 3 seconds
   useEffect(() => {
     if (message) {
@@ -41,7 +41,7 @@ const App = () => {
 
   useEffect(() => {
     setFilteredPersons(persons);
-    setAddedToDb(false)
+    setAddedToDb(false);
   }, [persons]); // Update filteredPersons when persons change
 
   // Handle name change input
@@ -58,7 +58,6 @@ const App = () => {
   const handleAddName = (event) => {
     event.preventDefault();
 
-
     const newNameObject = {
       name: newName,
       number: newNumber,
@@ -66,41 +65,23 @@ const App = () => {
 
     // See if the name already exists in the DB
     if (persons.some((person) => person.name === newNameObject.name)) {
-      // Get the person object if found in the DB
       const foundPerson = persons.find(
         (person) => person.name === newNameObject.name
       );
-      // Modify the phone number of the found person object
+
       const confirmUpdate = window.confirm(
         `${newNameObject.name} is already in the phonebook, replace the old number with a new one?`
       );
 
-      // AXIOS PUT => update the person object in the DB
+      // check to see if the user wants to update the contact number
       if (confirmUpdate) {
-        const updatedPerson = { ...foundPerson, number: newNameObject.number };
-        personService
-          .update(foundPerson.id, updatedPerson)
-          .then((response) => {
-            console.log("Person updated:", response.data);
-            // Update the local state with the new data
-            setPersons(
-              persons.map((person) =>
-                person.id !== foundPerson.id ? person : response.data
-              )
-            );
-            setNewName("");
-            setNewNumber("");
-            setMessageCSS("successMessage")
-            setMessage(`The number for ${foundPerson.name} has been updated successfully.`)
-          })
-          .catch((error) => {
-            console.error("Error updating person:", error);
-            setMessageCSS("errorMessage")
-            setMessage(`Error updating the number for ${foundPerson.name}.`)
-          });
-        return;
+        const id = foundPerson.id;
+        const newObject = {
+          name: foundPerson.name,
+          number: newNameObject.number,
+        };
+        updateName(id, newObject);
       } else {
-        // If user cancels the update, do nothing
         console.log("Update cancelled");
         return;
       }
@@ -109,20 +90,42 @@ const App = () => {
       personService
         .create(newNameObject)
         .then((response) => {
-          console.log("person added", response.data);
           setPersons([...persons, response.data]);
-          setAddedToDb(true)
+          setAddedToDb(true);
           setNewName("");
           setNewNumber("");
-          setMessageCSS("successMessage")
-          setMessage(`${response.data.name} has been added to the phonebook.`)
+          setMessageCSS("successMessage");
+          setMessage(`${response.data.name} has been added to the phonebook.`);
         })
         .catch((error) => {
           console.error("Error adding person:", error);
-          setMessageCSS("errorMessage")
-          setMessage(`Error adding ${response.data.name}.`)
+          setMessageCSS("errorMessage");
+          setMessage(`Error adding ${response.data.name}.`);
         });
     }
+  };
+
+  // AXIOS PUT => update the contact's phone number
+  const updateName = (id, newObject) => {
+    personService
+      .update(id, newObject)
+      .then((modifiedPerson) => {
+        setPersons(
+          persons.map((person) => (person.id !== id ? person : modifiedPerson))
+        );
+        setAddedToDb(true);
+        setNewName("");
+        setNewNumber("");
+        setMessageCSS("successMessage");
+        setMessage(
+          `The number for ${newObject.name} has been updated successfully.`
+        );
+      })
+      .catch((error) => {
+        console.error("Error updating person:", error);
+        setMessageCSS("errorMessage");
+        setMessage(`Error updating the number for ${newObject.name}.`);
+      });
   };
 
   // Handle filtering the phonebook by name
@@ -140,27 +143,25 @@ const App = () => {
     );
 
     if (confirmDeletion) {
-      const foundPerson = persons.find(
-        (person) => person.id === id
-      );
+      const foundPerson = persons.find((person) => person.id === id);
       personService
         .remove(id)
         .then(() => {
-          console.log("Deleted person with id:", id);
-
           // Remove the deleted person from the list of persons
           const updatedPersons = persons.filter((person) => person.id !== id);
 
           // Update both persons and filteredPersons
           setPersons(updatedPersons);
           setFilteredPersons(updatedPersons); // Sync filteredPersons with updated persons list
-          setMessageCSS("successMessage")
-          setMessage(`${foundPerson.name} has been deleted from the phonebook.`)
+          setMessageCSS("successMessage");
+          setMessage(
+            `${foundPerson.name} has been deleted from the phonebook.`
+          );
         })
         .catch((error) => {
           console.error("Error deleting person:", error);
-          setMessageCSS("errorMessage")
-          setMessage(`Error deleting ${foundPerson.name}.`)
+          setMessageCSS("errorMessage");
+          setMessage(`Error deleting ${foundPerson.name}.`);
         });
     } else {
       console.log("deletion cancelled");
@@ -170,7 +171,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={message} messageCSS={messageCSS}/>
+      <Notification message={message} messageCSS={messageCSS} />
       <Filter handleFilteredPersons={handleFilteredPersons} />
       <h2>Add a new number</h2>
       <Form
