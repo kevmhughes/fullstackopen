@@ -20,6 +20,10 @@ const Form = ({
             value={newName}
             onChange={handleNameChange}
             placeholder="Write a name here..."
+            pattern="^[A-Za-z\s]+$"
+            title="Only letters and spaces are allowed."
+            required
+            minlength="3"
           />
         </div >
         <div className="flex-container">
@@ -29,6 +33,10 @@ const Form = ({
             value={newNumber}
             onChange={handleNumberChange}
             placeholder="Write a number here..."
+            pattern="^\d{2,3}-\d{6,9}$" 
+            title="Enter a number in the format: 12-123456789 (2-3 digits, hyphen, 6-9 digits)."
+            required
+            minlength="8"
           />
         </div>
       </div>
