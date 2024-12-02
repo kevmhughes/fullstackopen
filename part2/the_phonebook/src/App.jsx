@@ -64,9 +64,9 @@ const App = () => {
     };
 
     // See if the name already exists in the DB
-    if (persons.some((person) => person.name === newNameObject.name)) {
+    if (persons.some((person) => person.name.toLowerCase() === newNameObject.name.toLowerCase())) {
       const foundPerson = persons.find(
-        (person) => person.name === newNameObject.name
+        (person) => person.name.toLowerCase() === newNameObject.name.toLowerCase()
       );
 
       const confirmUpdate = window.confirm(
