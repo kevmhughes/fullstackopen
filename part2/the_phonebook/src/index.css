@@ -1,28 +1,58 @@
-h2 {
-    color: green;
-    font-style: italic;
+  ul {
+    padding-left: 0;
+  }
+  
+  .wrapper {
+    width: 600px;
   }
 
-  li {
-    color: grey;
-    padding-top: 3px;
-    font-size: 15px;
+  .title {
+    margin-top: 2rem;
+  }
+
+  .wide {
+    width: 100%;
+  }
+
+  .flex-container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+    width: 100%;
+  }
+
+  .btn {
+    width: 100px;
+    padding: 4px;
+    justify-self: end;
+  }
+
+  .list-item {
+    display: flex;
   }
 
   .successMessage {
     border: solid 4px green;
-    padding: 4px;
+    padding: 10px;
     width: fit-content;
     margin-bottom: 8px;
     color: green;
-    background-color: lightgray
+    width: 100%;
+    border-radius: 5px;
   }
 
   .errorMessage {
     border: solid 4px red;
-    padding: 4px;
+    padding: 10px;
     width: fit-content;
     margin-bottom: 8px;
     color: red;
-    background-color: lightgray
+    width: 100%;
+    border-radius: 5px;
   }

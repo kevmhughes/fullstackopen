@@ -3,9 +3,12 @@ import Button from "./Button";
 
 const Person = ({ person, handleDeletePerson }) => {
   return (
-    <li style={{ display: "flex", gap: "4px" }}>
-        {person.name}: {person.number}
-      <Button handleDeletePerson={() => handleDeletePerson(person.id)} />
+    <li className="list-item">
+      <div className="grid-container">
+        <div className="grid-item">{person.name}:</div> 
+        <div className="grid-item">{person.number}</div>
+        <Button handleDeletePerson={() => handleDeletePerson(person.id)} />
+      </div>
     </li>
   );
 };

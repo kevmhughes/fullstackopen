@@ -98,6 +98,7 @@ const App = () => {
           setMessage(`${response.data.name} has been added to the phonebook.`);
         })
         .catch((error) => {
+          setMessage(error.response.data.error);
           console.error("Error adding person:", error);
           setMessageCSS("errorMessage");
           setMessage(`Error adding ${response.data.name}.`);
@@ -169,11 +170,12 @@ const App = () => {
   };
 
   return (
-    <div>
+    <div className="container wrapper title">
       <h2>Phonebook</h2>
       <Notification message={message} messageCSS={messageCSS} />
       <Filter handleFilteredPersons={handleFilteredPersons} />
-      <h2>Add a new number</h2>
+      <div>
+      <h2 className="title">Add a new number</h2>
       <Form
         handleAddName={handleAddName}
         handleNameChange={handleNameChange}
@@ -181,11 +183,14 @@ const App = () => {
         newNumber={newNumber}
         newName={newName}
       />
-      <h2>Numbers</h2>
+      </div>
+      <div>
+      <h2 className="title">Numbers</h2>
       <List
         filteredPersons={filteredPersons}
         handleDeletePerson={handleDeletePerson}
       />
+      </div>
     </div>
   );
 };

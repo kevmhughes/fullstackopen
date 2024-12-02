@@ -10,26 +10,20 @@ const Form = ({
   return (
     <form
       onSubmit={handleAddName}
-      style={{
-        display: "flex ",
-        flexDirection: "column",
-        gap: "4px",
-        width: "150px",
-      }}
+      className="wide"
     >
       <div>
-        <div style={{ display: "flex", gap: "4px" }}>
-          name:
+        <div className="flex-container">
+          Name:
           <input
-            style={{ marginBottom: "4px" }}
             type="text"
             value={newName}
             onChange={handleNameChange}
             placeholder="Write a name here..."
           />
-        </div>
-        <div style={{ display: "flex", gap: "4px" }}>
-          number:
+        </div >
+        <div className="flex-container">
+          Number:
           <input
             type="text"
             value={newNumber}
@@ -40,7 +34,7 @@ const Form = ({
       </div>
       <div>
         <button type="submit" disabled={!newName || !newNumber}>
-          add
+          Add
         </button>
       </div>
     </form>
