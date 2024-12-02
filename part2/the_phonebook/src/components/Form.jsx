@@ -8,10 +8,7 @@ const Form = ({
   newName,
 }) => {
   return (
-    <form
-      onSubmit={handleAddName}
-      className="wide"
-    >
+    <form onSubmit={handleAddName} className="wide">
       <div>
         <div className="flex-container">
           Name:
@@ -25,7 +22,7 @@ const Form = ({
             required
             minlength="3"
           />
-        </div >
+        </div>
         <div className="flex-container">
           Number:
           <input
@@ -33,7 +30,7 @@ const Form = ({
             value={newNumber}
             onChange={handleNumberChange}
             placeholder="Write a number here..."
-            pattern="^\d{2,3}-\d{6,9}$" 
+            pattern="^\d{2,3}-\d{6,9}$"
             title="Enter a number in the format: 12-123456789 (2-3 digits, hyphen, 6-9 digits)."
             required
             minlength="8"

@@ -5,7 +5,7 @@ const Person = ({ person, handleDeletePerson }) => {
   return (
     <li className="list-item">
       <div className="grid-container">
-        <div className="grid-item">{person.name}:</div> 
+        <div className="grid-item">{person.name}:</div>
         <div className="grid-item">{person.number}</div>
         <Button handleDeletePerson={() => handleDeletePerson(person.id)} />
       </div>

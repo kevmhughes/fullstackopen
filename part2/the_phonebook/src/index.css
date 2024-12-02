@@ -1,5 +1,9 @@
 input {
-  text-transform: capitalize;
+  text-transform: capitalize;  /* Capitalizes input text */
+}
+
+input::placeholder {
+  text-transform: none;  /* Prevents capitalization on placeholder text */
 }
 
 ul {

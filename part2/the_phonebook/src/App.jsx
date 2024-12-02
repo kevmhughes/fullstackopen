@@ -175,21 +175,21 @@ const App = () => {
       <Notification message={message} messageCSS={messageCSS} />
       <Filter handleFilteredPersons={handleFilteredPersons} />
       <div>
-      <h2 className="title">Add a new number</h2>
-      <Form
-        handleAddName={handleAddName}
-        handleNameChange={handleNameChange}
-        handleNumberChange={handleNumberChange}
-        newNumber={newNumber}
-        newName={newName}
-      />
+        <h2 className="title">Add a new number</h2>
+        <Form
+          handleAddName={handleAddName}
+          handleNameChange={handleNameChange}
+          handleNumberChange={handleNumberChange}
+          newNumber={newNumber}
+          newName={newName}
+        />
       </div>
       <div>
-      <h2 className="title">Numbers</h2>
-      <List
-        filteredPersons={filteredPersons}
-        handleDeletePerson={handleDeletePerson}
-      />
+        <h2 className="title">Numbers</h2>
+        <List
+          filteredPersons={filteredPersons}
+          handleDeletePerson={handleDeletePerson}
+        />
       </div>
     </div>
   );
