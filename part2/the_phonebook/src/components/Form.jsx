@@ -20,7 +20,8 @@ const Form = ({
             pattern="^[A-Za-z\s]+$"
             title="Only letters and spaces are allowed."
             required
-            minlength="3"
+            minLength="3"
+            maxLength="20"
           />
         </div>
         <div className="flex-container">
@@ -33,7 +34,8 @@ const Form = ({
             pattern="^\d{2,3}-\d{6,9}$"
             title="Enter a number in the format: 12-123456789 (2-3 digits, hyphen, 6-9 digits)."
             required
-            minlength="8"
+            minLength="8"
+            maxLength="13"
           />
         </div>
       </div>

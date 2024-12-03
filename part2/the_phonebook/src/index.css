@@ -1,17 +1,9 @@
-input {
-  text-transform: capitalize;  /* Capitalizes input text */
-}
-
-input::placeholder {
-  text-transform: none;  /* Prevents capitalization on placeholder text */
-}
-
 ul {
   padding-left: 0;
 }
 
 .wrapper {
-  width: 600px;
+  max-width: 600px;
 }
 
 .title {
@@ -34,6 +26,10 @@ ul {
   gap: 2rem;
   width: 100%;
   align-items: center;
+}
+
+.grid-item-one {
+  max-width: 200px;
 }
 
 .btn {
@@ -64,4 +60,14 @@ ul {
   color: red;
   width: 100%;
   border-radius: 5px;
+}
+
+@media (max-width: 575px) {
+  /* CSS rules for extra small screens */
+  .grid-container {
+      font-size: 13px;
+  }
+  .btn {
+    width: auto;
+  }
 }

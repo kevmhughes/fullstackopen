@@ -13,8 +13,17 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [message, setMessage] = useState(null);
   const [messageCSS, setMessageCSS] = useState("");
-  // this is to trigger getAll useEffect when adding contact to DB
+  // Triggers the (getAll) useEffect when adding a contact to DB
   const [addedToDb, setAddedToDb] = useState(false);
+
+   // Function to capitalize the first letter of each word
+   const capitalizeFirstLetterOfEachWord = (str) => {
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
 
   // Set a timeout to reset the message after 3 seconds
   useEffect(() => {
@@ -46,7 +55,8 @@ const App = () => {
 
   // Handle name change input
   const handleNameChange = (event) => {
-    setNewName(event.target.value);
+    const capitalizedValue = capitalizeFirstLetterOfEachWord(event.target.value);
+    setNewName(capitalizedValue);
   };
 
   // Handle number change input
