@@ -84,6 +84,8 @@ describe("total likes", () => {
     },
   ];
 
+  const emptyArray = [];
+
   test("when list has only one blog, equals the likes of that", () => {
     const result = listHelper.totalLikes(listWithOneBlog);
     assert.strictEqual(result, 5);
@@ -96,6 +98,16 @@ describe("total likes", () => {
 
   test("when the total number of likes is zero, equals zero", () => {
     const result = listHelper.totalLikes(listWithZeroLikes);
+    assert.strictEqual(result, 0);
+  });
+
+  test("when the total number of likes is zero, equals zero", () => {
+    const result = listHelper.totalLikes(listWithZeroLikes);
+    assert.strictEqual(result, 0);
+  });
+
+  test("when there is an empty array, equals zero", () => {
+    const result = listHelper.totalLikes(emptyArray);
     assert.strictEqual(result, 0);
   });
 });
