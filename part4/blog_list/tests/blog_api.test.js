@@ -85,8 +85,32 @@ test("blogs have an id property instead of _id", async () => {
     assert(blog.hasOwnProperty("id"), `Blog does not have an 'id' property`);
     // Ensure that the blog does not have an '_id' property
     assert(
-      !blog.hasOwnProperty("_id"), `Blog has an '_id' property, but it should not`);
+      !blog.hasOwnProperty("_id"),
+      `Blog has an '_id' property, but it should not`
+    );
   });
+});
+
+test("a valid blog can be added", async () => {
+  const newBlog = {
+    title: "A Day Out In The Park With Friends Four",
+    author: "Fanny Swipes & More Friends",
+    url: "https://disneyparksblog.com/community-outreach/disney-parks-costumers-sew-holiday-happiness-behind-the-scenes/",
+    likes: 1234,
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const response = await api.get("/api/blogs");
+
+  const contents = response.body.map((r) => r.title);
+
+  assert.strictEqual(response.body.length, initialBlogs.length + 1);
+  assert(contents.includes("A Day Out In The Park With Friends Four"));
 });
 
 after(async () => {
