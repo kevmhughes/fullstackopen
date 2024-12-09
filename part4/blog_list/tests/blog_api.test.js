@@ -4,63 +4,21 @@ const mongoose = require("mongoose");
 const supertest = require("supertest");
 const assert = require("node:assert");
 const app = require("../app");
+const helper = require("./test_helper");
 
 const api = supertest(app);
 
-const initialBlogs = [
-  {
-    title: "A Day Out In The Park",
-    author: "Fanny Swipes",
-    url: "https://disneyparksblog.com/community-outreach/disney-parks-costumers-sew-holiday-happiness-behind-the-scenes/",
-    likes: 234,
-    __v: 0,
-    id: "674e83ea5aee91bf6c7f407b",
-  },
-  {
-    title: "A Day Out In The Park With Friends",
-    author: "Fanny Swipes",
-    url: "https://disneyparksblog.com/community-outreach/disney-parks-costumers-sew-holiday-happiness-behind-the-scenes/",
-    likes: 23487,
-    __v: 0,
-    id: "674e84455aee91bf6c7f407e",
-  },
-  {
-    title: "A Day Out In The Park Two",
-    author: "Fanny Swipes",
-    url: "https://disneyparksblog.com/community-outreach/disney-parks-costumers-sew-holiday-happiness-behind-the-scenes/",
-    likes: 234,
-    __v: 0,
-    id: "67562ee29adc1ed073d193e0",
-  },
-  {
-    title: "A Day Out In The Park With Friends Two",
-    author: "Fanny Swipes & Friends",
-    url: "https://disneyparksblog.com/community-outreach/disney-parks-costumers-sew-holiday-happiness-behind-the-scenes/",
-    likes: 1,
-    __v: 0,
-    id: "67562f0c9adc1ed073d193e3",
-  },
-  {
-    title: "A Day Out In The Park With Friends Three",
-    author: "Fanny Swipes & More Friends",
-    url: "https://disneyparksblog.com/community-outreach/disney-parks-costumers-sew-holiday-happiness-behind-the-scenes/",
-    likes: 1234,
-    __v: 0,
-    id: "67563201bfac82b17b7c568f",
-  },
-];
-
 beforeEach(async () => {
   await Blog.deleteMany({});
-  let blogObject = new Blog(initialBlogs[0]);
+  let blogObject = new Blog(helper.initialBlogs[0]);
   await blogObject.save();
-  blogObject = new Blog(initialBlogs[1]);
+  blogObject = new Blog(helper.initialBlogs[1]);
   await blogObject.save();
-  blogObject = new Blog(initialBlogs[2]);
+  blogObject = new Blog(helper.initialBlogs[2]);
   await blogObject.save();
-  blogObject = new Blog(initialBlogs[3]);
+  blogObject = new Blog(helper.initialBlogs[3]);
   await blogObject.save();
-  blogObject = new Blog(initialBlogs[4]);
+  blogObject = new Blog(helper.initialBlogs[4]);
   await blogObject.save();
 });
 
@@ -71,10 +29,10 @@ test("blogs are returned as json", async () => {
     .expect("Content-Type", /application\/json/);
 });
 
-test("there are five blogs", async () => {
+test("all blogs are returned", async () => {
   const response = await api.get("/api/blogs");
 
-  assert.strictEqual(response.body.length, initialBlogs.length);
+  assert.strictEqual(response.body.length, helper.initialBlogs.length);
 });
 
 test("blogs have an id property instead of _id", async () => {
@@ -105,12 +63,31 @@ test("a valid blog can be added", async () => {
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
-  const response = await api.get("/api/blogs");
+  const blogsAtEnd = await helper.blogsInDb();
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1);
 
-  const contents = response.body.map((r) => r.title);
+  const titles = blogsAtEnd.map((b) => b.title);
+  assert(titles.includes("A Day Out In The Park With Friends Four"));
+});
 
-  assert.strictEqual(response.body.length, initialBlogs.length + 1);
-  assert(contents.includes("A Day Out In The Park With Friends Four"));
+test("if the likes property is missing it defaults to zero", async () => {
+  const blogWithoutLikes = {
+    title: "Starting Out",
+    author: "Fanny Smith",
+    url: "https://disneyparksblog.com/community-outreach/disney-parks-costumers-sew-holiday-happiness-behind-the-scenes/",
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(blogWithoutLikes)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  // Ensure the number of blogs has increased by 1
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1);
+  // Check that the new blog has 'likes' set to 0
+  assert.strictEqual(blogsAtEnd[helper.initialBlogs.length].likes, 0);
 });
 
 after(async () => {
