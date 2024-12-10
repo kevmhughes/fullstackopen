@@ -136,6 +136,37 @@ describe("GET /api/blogs/:id - Fetching a specific blog by its ID", () => {
   });
 });
 
+describe("PUT /api/blogs/:id - Updating a blog by ID", () => {
+  test("succeeds with status code 200 if id is valid", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+    const initialLikes = blogToUpdate.likes;
+    const updatedLikes = initialLikes + 1;
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send({ likes: updatedLikes })
+      .expect(200);
+
+    const blogsAtEnd = await helper.blogsInDb();
+
+    const updatedBlog = blogsAtEnd.find((blog) => blog.id === blogToUpdate.id);
+    assert.strictEqual(updatedBlog.likes, updatedLikes);
+  });
+
+  test("fails with status code 404 if blog does not exist", async () => {
+    const validNonexistingId = await helper.nonExistingId();
+
+    await api.put(`/api/blogs/${validNonexistingId}`).expect(404);
+  });
+
+  test("fails with statuscode 400 if id is invalid", async () => {
+    const invalidId = "5a3d5da59070081a82a3445";
+
+    await api.put(`/api/blogs/${invalidId}`).expect(400);
+  });
+});
+
 describe("DELETE /api/blogs/:id - Deleting a blog by ID", () => {
   test("succeeds with status code 204 if id is valid", async () => {
     const blogsAtStart = await helper.blogsInDb();
@@ -149,6 +180,18 @@ describe("DELETE /api/blogs/:id - Deleting a blog by ID", () => {
 
     const contents = blogsAtEnd.map((b) => b.title);
     assert(!contents.includes(blogToDelete.title));
+  });
+
+  test("fails with status code 404 if blog does not exist", async () => {
+    const validNonexistingId = await helper.nonExistingId();
+
+    await api.delete(`/api/blogs/${validNonexistingId}`).expect(404);
+  });
+
+  test("fails with statuscode 400 if id is invalid", async () => {
+    const invalidId = "5a3d5da59070081a82a3445";
+
+    await api.delete(`/api/blogs/${invalidId}`).expect(400);
   });
 });
 
