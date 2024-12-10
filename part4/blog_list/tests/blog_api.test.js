@@ -22,7 +22,7 @@ beforeEach(async () => {
   await blogObject.save();
 });
 
-describe("back end tests", () => {
+describe("GET /api/blogs - Fetching all blogs", () => {
   test("blogs are returned as json", async () => {
     await api
       .get("/api/blogs")
@@ -49,7 +49,9 @@ describe("back end tests", () => {
       );
     });
   });
+});
 
+describe("POST /api/blogs - Creating a new blog & validation and error handling", () => {
   test("a valid blog can be added", async () => {
     const newBlog = {
       title: "A Day Out In The Park With Friends Four",
@@ -118,8 +120,38 @@ describe("back end tests", () => {
       .expect(400)
       .expect("Content-Type", /application\/json/);
   });
+});
 
-  after(async () => {
-    await mongoose.connection.close();
+describe("GET /api/blogs/:id - Fetching a specific blog by its ID", () => {
+  test("fails with statuscode 404 if blog does not exist", async () => {
+    const validNonexistingId = await helper.nonExistingId();
+
+    await api.get(`/api/blogs/${validNonexistingId}`).expect(404);
   });
+
+  test("fails with statuscode 400 if id is invalid", async () => {
+    const invalidId = "5a3d5da59070081a82a3445";
+
+    await api.get(`/api/blogs/${invalidId}`).expect(400);
+  });
+});
+
+describe("DELETE /api/blogs/:id - Deleting a blog by ID", () => {
+  test("succeeds with status code 204 if id is valid", async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+    const blogsAtEnd = await helper.blogsInDb();
+
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1);
+
+    const contents = blogsAtEnd.map((b) => b.title);
+    assert(!contents.includes(blogToDelete.title));
+  });
+});
+
+after(async () => {
+  await mongoose.connection.close();
 });

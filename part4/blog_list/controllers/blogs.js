@@ -42,4 +42,38 @@ blogsRouter.post("/", async (request, response) => {
   }
 });
 
+blogsRouter.get("/:id", async (request, response) => {
+  try {
+    const blog = await Blog.findById(request.params.id);
+    if (blog) {
+      response.json(blog);
+    } else {
+      response.status(404).json({ error: "Blog not found" });
+    }
+  } catch (err) {
+    logger.error("Error fetching blog:", err.message);
+
+    // Check for a CastError, which happens when the id is not a valid ObjectId
+    if (err.name === "CastError") {
+      return response.status(400).json({ error: "Malformatted ID" });
+    }
+
+    response.status(500).json({ error: "Failed to fetch blog" });
+  }
+});
+
+blogsRouter.delete("/:id", async (request, response) => {
+  try {
+    const blog = await Blog.findByIdAndDelete(request.params.id);
+    if (blog) {
+      response.status(204).end();
+    } else {
+      response.status(404).json({ error: "Blog not found" });
+    }
+  } catch (err) {
+    logger.error("Error deleting blog:", err.message);
+    response.status(500).json({ error: "Failed to delete blog" });
+  }
+});
+
 module.exports = blogsRouter;
