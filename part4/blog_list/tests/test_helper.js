@@ -1,4 +1,5 @@
 const Blog = require("../models/blog.js");
+const User = require("../models/user");
 
 const initialBlogs = [
   {
@@ -43,6 +44,43 @@ const initialBlogs = [
   },
 ];
 
+const initialUsers = [
+  {
+    username: "kevin",
+    name: "Kevin Hughes",
+    passwordHash:
+      "$2b$10$mdeKL7znCjwZcqVnSHc2yOVG/DT5ZGhZC2Rq25LA2IBGeAXlQ5fPS",
+    blogs: [],
+    id: "675db963d988a0c2a28596a2",
+  },
+  {
+    username: "john",
+    name: "John Smith",
+    passwordHash:
+      "$2b$10$mdeKL7znCjwZcqVnSHc2yOVG/DT5ZGhZC2Rq25LA2IBGeAXlQ5fQF",
+    blogs: [],
+    id: "675db963d988a0c2a28596a1",
+  },
+  ,
+  {
+    username: "sarah",
+    name: "Sarah Smith",
+    passwordHash:
+      "$2b$10$mdeKL7znCjwZcqVnSHc2yOVG/DT5ZGhZC2Rq25LA2IBGeAXlQ5fCF",
+    blogs: [],
+    id: "675db963d988a0c2a28596a2",
+  },
+  ,
+  {
+    username: "david",
+    name: "David Jones",
+    passwordHash:
+      "$2b$10$mdeKL7znCjwZcqVnSHc2yOVG/DT5ZGhZC2Rq25LA2IBGeAXlQ5fLP",
+    blogs: [],
+    id: "675db963d988a0c2a28596a4",
+  },
+];
+
 const nonExistingId = async () => {
   const blog = new Blog({
     title: "For Testing",
@@ -61,8 +99,15 @@ const blogsInDb = async () => {
   return blogs.map((blog) => blog.toJSON());
 };
 
+const usersInDb = async () => {
+  const users = await User.find({});
+  return users.map((u) => u.toJSON());
+};
+
 module.exports = {
   initialBlogs,
   nonExistingId,
   blogsInDb,
+  initialUsers,
+  usersInDb,
 };
