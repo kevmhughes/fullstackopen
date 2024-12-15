@@ -12,6 +12,22 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
 
+const tokenExtractor = (request, response, next) => {
+  // Extract the token from the Authorization header
+  const authorization = request.headers["authorization"];
+
+  if (authorization && authorization.startsWith("Bearer ")) {
+    // Remove the 'Bearer ' part and get the token
+    const token = authorization.slice(7);
+
+    // Attach the token to the request object
+    request.token = token;
+  }
+
+  // Call the next middleware function in the stack
+  next();
+};
+
 const errorHandler = (error, request, response, next) => {
   logger.error(error.message);
 
@@ -25,12 +41,14 @@ const errorHandler = (error, request, response, next) => {
   ) {
     return response
       .status(400)
-      .json({ error: "expected `username` to be unique" 
-
+      .json({ error: "expected `username` to be unique" });
+  } else if (error.name === "JsonWebTokenError") {
+    return response.status(401).json({ error: "token invalid" });
+  } else if (error.name === "TokenExpiredError") {
+    return response.status(401).json({
+      error: "token expired",
     });
-    } else if (error.name ===  'JsonWebTokenError') {
-      return response.status(401).json({ error: 'token invalid' })
-    }
+  }
 
   next(error);
 };
@@ -39,4 +57,5 @@ module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
+  tokenExtractor,
 };

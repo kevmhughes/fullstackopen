@@ -1,21 +1,24 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
-const User = require('../models/user')
+const User = require("../models/user");
 const logger = require("../utils/logger");
-const jwt = require('jsonwebtoken')
+const jwt = require("jsonwebtoken");
 
-const getTokenFrom = request => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.startsWith('Bearer ')) {
-    return authorization.replace('Bearer ', '')
+const getTokenFrom = (request) => {
+  const authorization = request.get("authorization");
+  if (authorization && authorization.startsWith("Bearer ")) {
+    return authorization.replace("Bearer ", "");
   }
-  return null
-}
+  return null;
+};
 
 blogsRouter.get("/", async (request, response) => {
   try {
-    const blogs = await Blog.find({}).populate("user", { username: 1, name: 1});
-    console.log("blogs", blogs)
+    const blogs = await Blog.find({}).populate("user", {
+      username: 1,
+      name: 1,
+    });
+    console.log("blogs", blogs);
     response.status(200).json(blogs);
   } catch (err) {
     logger.error("Error fetching blogs:", err.message);
@@ -37,26 +40,31 @@ blogsRouter.post("/", async (request, response) => {
     return response.status(400).json({ error: "Author is required" });
   }
 
-  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
-  }
-  const user = await User.findById(decodedToken.id)
+  // Get the token from the request
+  const token = request.token;
 
-  console.log("user", user)
+  if (!token) {
+    return response.status(401).json({ error: "Token missing" });
+  }
+
+  const decodedToken = jwt.verify(token, process.env.SECRET);
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: "token invalid" });
+  }
+  const user = await User.findById(decodedToken.id);
 
   const blog = new Blog({
     title,
     url,
     author,
     likes: likes || 0, // Default likes to 0 if not provided
-    user: user.id
+    user: user.id,
   });
 
   try {
     const postedBlog = await blog.save();
-    user.blogs = user.blogs.concat(postedBlog._id)
-    await user.save()
+    user.blogs = user.blogs.concat(postedBlog._id);
+    await user.save();
     response.status(201).json(postedBlog);
   } catch (err) {
     logger.error("Error saving blog:", err.message);
