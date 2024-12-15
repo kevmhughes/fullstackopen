@@ -42,7 +42,7 @@ describe("when there is initially one user in db", () => {
   });
 });
 
-test("respondes with 'Username must be unique", async () => {
+test("responds with 'Username must be unique", async () => {
   const usersAtStart = await helper.usersInDb();
 
   const newUser = {

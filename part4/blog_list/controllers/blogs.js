@@ -1,10 +1,12 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
+const User = require('../models/user')
 const logger = require("../utils/logger");
 
 blogsRouter.get("/", async (request, response) => {
   try {
-    const blogs = await Blog.find({});
+    const blogs = await Blog.find({}).populate("user", { username: 1, name: 1});
+    console.log("blogs", blogs)
     response.status(200).json(blogs);
   } catch (err) {
     logger.error("Error fetching blogs:", err.message);
@@ -13,7 +15,7 @@ blogsRouter.get("/", async (request, response) => {
 });
 
 blogsRouter.post("/", async (request, response) => {
-  const { title, url, author, likes } = request.body;
+  const { title, url, author, likes, userId } = request.body;
 
   // Check for missing required fields and provide specific error messages
   if (!title) {
@@ -26,15 +28,22 @@ blogsRouter.post("/", async (request, response) => {
     return response.status(400).json({ error: "Author is required" });
   }
 
+  const user = await User.findById(userId)
+
+  console.log("user", user)
+
   const blog = new Blog({
     title,
     url,
     author,
     likes: likes || 0, // Default likes to 0 if not provided
+    user: user.id
   });
 
   try {
     const postedBlog = await blog.save();
+    user.blogs = user.blogs.concat(postedBlog._id)
+    await user.save()
     response.status(201).json(postedBlog);
   } catch (err) {
     logger.error("Error saving blog:", err.message);
