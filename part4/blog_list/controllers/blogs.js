@@ -32,6 +32,9 @@ blogsRouter.post("/", async (request, response) => {
     return response.status(400).json({ error: "Author is required" });
   }
 
+  // get user from request object
+  const user = request.user;
+
   // Get the token from the request
   const token = request.token;
 
@@ -43,7 +46,6 @@ blogsRouter.post("/", async (request, response) => {
   if (!decodedToken.id) {
     return response.status(401).json({ error: "token invalid" });
   }
-  const user = await User.findById(decodedToken.id);
 
   const blog = new Blog({
     title,
@@ -116,6 +118,8 @@ blogsRouter.put("/:id", async (request, response) => {
 });
 
 blogsRouter.delete("/:id", async (request, response) => {
+  // get user from request object
+  const user = request.user;
   // Get the token from the request
   const token = request.token;
 
@@ -130,8 +134,6 @@ blogsRouter.delete("/:id", async (request, response) => {
     }
 
     const blogIdToDelete = request.params.id;
-
-    const user = await User.findById(decodedToken.id);
 
     // Check if the user is associated with the blog
     if (!user || !user.blogs.includes(blogIdToDelete)) {

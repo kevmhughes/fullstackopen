@@ -1,4 +1,7 @@
 const logger = require("./logger");
+const jwt = require('jsonwebtoken');
+const User = require('../models/user');
+
 
 const requestLogger = (request, response, next) => {
   logger.info("Method:", request.method);
@@ -27,6 +30,39 @@ const tokenExtractor = (request, response, next) => {
   // Call the next middleware function in the stack
   next();
 };
+
+const userExtractor = async (request, response, next) => {
+  // Extract the token from the Authorization header
+  const authorization = request.headers["authorization"];
+
+  if (authorization && authorization.startsWith("Bearer ")) {
+    // Remove the 'Bearer ' part and get the token
+    const token = authorization.slice(7);
+
+     // Verify and decode the token
+     const decodedToken = jwt.verify(token, process.env.SECRET);
+
+     // If the token is invalid or not present, return an error
+     if (!decodedToken.id) {
+      return response.status(401).json({ error: "Token invalid or missing" });
+    }
+
+    // Find the user based on the decoded token's id
+    const user = await User.findById(decodedToken.id);
+
+    if (!user) {
+      return response.status(404).json({ error: "User not found" });
+    }
+
+    // Attach the user to the request object
+    request.user = user;
+  }
+
+  // Call the next middleware function in the stack
+  next();
+};
+
+
 
 const errorHandler = (error, request, response, next) => {
   logger.error(error.message);
@@ -58,4 +94,5 @@ module.exports = {
   unknownEndpoint,
   errorHandler,
   tokenExtractor,
+  userExtractor
 };
