@@ -4,14 +4,6 @@ const User = require("../models/user");
 const logger = require("../utils/logger");
 const jwt = require("jsonwebtoken");
 
-const getTokenFrom = (request) => {
-  const authorization = request.get("authorization");
-  if (authorization && authorization.startsWith("Bearer ")) {
-    return authorization.replace("Bearer ", "");
-  }
-  return null;
-};
-
 blogsRouter.get("/", async (request, response) => {
   try {
     const blogs = await Blog.find({}).populate("user", {
@@ -124,13 +116,40 @@ blogsRouter.put("/:id", async (request, response) => {
 });
 
 blogsRouter.delete("/:id", async (request, response) => {
+  // Get the token from the request
+  const token = request.token;
+
+  if (!token) {
+    return response.status(401).json({ error: "Token missing" });
+  }
+
   try {
-    const blog = await Blog.findByIdAndDelete(request.params.id);
-    if (blog) {
-      response.status(204).end();
-    } else {
-      response.status(404).json({ error: "Blog not found" });
+    const decodedToken = jwt.verify(token, process.env.SECRET);
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: "token invalid" });
     }
+
+    const blogIdToDelete = request.params.id;
+
+    const user = await User.findById(decodedToken.id);
+
+    // Check if the user is associated with the blog
+    if (!user || !user.blogs.includes(blogIdToDelete)) {
+      return response
+        .status(404)
+        .json({ error: "Blog not found or not authorized for deletion" });
+    }
+
+    // Delete the blog from Blog model
+    await Blog.findByIdAndDelete(blogIdToDelete);
+
+    // Remove the blog reference from the user's blogs array
+    user.blogs = user.blogs.filter(
+      (blog) => blog.toString() !== blogIdToDelete
+    );
+    await user.save();
+
+    response.status(204).end();
   } catch (err) {
     logger.error("Error deleting blog:", err.message);
 
