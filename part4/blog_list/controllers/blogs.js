@@ -1,24 +1,23 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
-const User = require("../models/user");
 const logger = require("../utils/logger");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 
-blogsRouter.get("/", async (request, response) => {
+blogsRouter.get("/", async (request, response, next) => {
   try {
     const blogs = await Blog.find({}).populate("user", {
       username: 1,
       name: 1,
     });
-    console.log("blogs", blogs);
     response.status(200).json(blogs);
   } catch (err) {
     logger.error("Error fetching blogs:", err.message);
-    response.status(500).json({ error: "Failed to fetch blogs" });
+    next(err);
   }
 });
 
-blogsRouter.post("/", async (request, response) => {
+blogsRouter.post("/", async (request, response, next) => {
   const { title, url, author, likes } = request.body;
 
   // Check for missing required fields and provide specific error messages
@@ -62,11 +61,11 @@ blogsRouter.post("/", async (request, response) => {
     response.status(201).json(postedBlog);
   } catch (err) {
     logger.error("Error saving blog:", err.message);
-    response.status(500).json({ error: "Failed to save blog" });
+    next(err);
   }
 });
 
-blogsRouter.get("/:id", async (request, response) => {
+blogsRouter.get("/:id", async (request, response, next) => {
   try {
     const blog = await Blog.findById(request.params.id);
     if (blog) {
@@ -82,11 +81,11 @@ blogsRouter.get("/:id", async (request, response) => {
       return response.status(400).json({ error: "Malformatted ID" });
     }
 
-    response.status(500).json({ error: "Failed to fetch blog" });
+    next(err);
   }
 });
 
-blogsRouter.put("/:id", async (request, response) => {
+blogsRouter.put("/:id", async (request, response, next) => {
   const { title, author, url, likes } = request.body;
 
   const blog = {
@@ -113,11 +112,17 @@ blogsRouter.put("/:id", async (request, response) => {
       return response.status(400).json({ error: "Malformatted ID" });
     }
 
-    response.status(500).json({ error: "Failed to update blog" });
+    next(err);
   }
 });
 
-blogsRouter.delete("/:id", async (request, response) => {
+blogsRouter.delete("/:id", async (request, response, next) => {
+  // Check if the ID is valid (valid ObjectId format)
+  if (!mongoose.Types.ObjectId.isValid(request.params.id)) {
+    return response.status(400).json({ error: "Malformatted ID" });
+  }
+
+  const blogIdToDelete = request.params.id;
   // get user from request object
   const user = request.user;
   // Get the token from the request
@@ -128,18 +133,22 @@ blogsRouter.delete("/:id", async (request, response) => {
   }
 
   try {
+    // Verify token
     const decodedToken = jwt.verify(token, process.env.SECRET);
     if (!decodedToken.id) {
       return response.status(401).json({ error: "token invalid" });
     }
 
-    const blogIdToDelete = request.params.id;
+    // Ensure the blog is associated with the user
+    const blogToDelete = await Blog.findById(blogIdToDelete);
+    if (!blogToDelete) {
+      return response.status(404).json({ error: "Blog not found" });
+    }
 
-    // Check if the user is associated with the blog
-    if (!user || !user.blogs.includes(blogIdToDelete)) {
+    if (blogToDelete.user.toString() !== decodedToken.id) {
       return response
-        .status(404)
-        .json({ error: "Blog not found or not authorized for deletion" });
+        .status(403)
+        .json({ error: "Unauthorized to delete this blog" });
     }
 
     // Delete the blog from Blog model
@@ -160,7 +169,7 @@ blogsRouter.delete("/:id", async (request, response) => {
       return response.status(400).json({ error: "Malformatted ID" });
     }
 
-    response.status(500).json({ error: "Failed to delete blog" });
+    next(err);
   }
 });
 

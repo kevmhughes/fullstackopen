@@ -1,7 +1,6 @@
 const logger = require("./logger");
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
-
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
 const requestLogger = (request, response, next) => {
   logger.info("Method:", request.method);
@@ -39,11 +38,11 @@ const userExtractor = async (request, response, next) => {
     // Remove the 'Bearer ' part and get the token
     const token = authorization.slice(7);
 
-     // Verify and decode the token
-     const decodedToken = jwt.verify(token, process.env.SECRET);
+    // Verify and decode the token
+    const decodedToken = jwt.verify(token, process.env.SECRET);
 
-     // If the token is invalid or not present, return an error
-     if (!decodedToken.id) {
+    // If the token is invalid or not present, return an error
+    if (!decodedToken.id) {
       return response.status(401).json({ error: "Token invalid or missing" });
     }
 
@@ -61,8 +60,6 @@ const userExtractor = async (request, response, next) => {
   // Call the next middleware function in the stack
   next();
 };
-
-
 
 const errorHandler = (error, request, response, next) => {
   logger.error(error.message);
@@ -86,6 +83,9 @@ const errorHandler = (error, request, response, next) => {
     });
   }
 
+  // Catch-all for any other error (usually server errors)
+  response.status(500).json({ error: "something went wrong on the server" });
+
   next(error);
 };
 
@@ -94,5 +94,5 @@ module.exports = {
   unknownEndpoint,
   errorHandler,
   tokenExtractor,
-  userExtractor
+  userExtractor,
 };

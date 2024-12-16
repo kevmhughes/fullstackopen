@@ -5,6 +5,8 @@ const supertest = require("supertest");
 const assert = require("node:assert");
 const app = require("../app");
 const helper = require("./test_helper");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
 const api = supertest(app);
 
@@ -52,6 +54,25 @@ describe("GET /api/blogs - Fetching all blogs", () => {
 });
 
 describe("POST /api/blogs - Creating a new blog & validation and error handling", () => {
+  let user;
+  let token;
+
+  beforeEach(async () => {
+    // Ensure no existing user with the same username
+    await User.deleteOne({ username: "testuser" });
+
+    // Create a user for authentication
+    user = new User({
+      username: "testuser",
+      name: "Test User",
+      passwordHash: "hashedpassword",
+    });
+    await user.save();
+
+    // Generate a JWT token for the user
+    token = jwt.sign({ id: user._id }, process.env.SECRET, { expiresIn: "1h" });
+  });
+
   test("a valid blog can be added", async () => {
     const newBlog = {
       title: "A Day Out In The Park With Friends Four",
@@ -62,6 +83,7 @@ describe("POST /api/blogs - Creating a new blog & validation and error handling"
 
     await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
@@ -82,6 +104,7 @@ describe("POST /api/blogs - Creating a new blog & validation and error handling"
 
     await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(blogWithoutLikes)
       .expect(201)
       .expect("Content-Type", /application\/json/);
@@ -118,6 +141,21 @@ describe("POST /api/blogs - Creating a new blog & validation and error handling"
       .post("/api/blogs")
       .send(blogWithoutTitle)
       .expect(400)
+      .expect("Content-Type", /application\/json/);
+  });
+
+  test("if no token is provided adding a blog fails with a 401 status code", async () => {
+    const ValidBlogWithNoToken = {
+      title: "A Day Out In The Park With Friends",
+      author: "Fanny Swipes & More Friends",
+      url: "https://disneyparksblog.com/community-outreach/disney-parks-costumers-sew-holiday-happiness-behind-the-scenes/",
+      likes: 1234,
+    };
+
+    await api
+      .post("/api/blogs")
+      .send(ValidBlogWithNoToken)
+      .expect(401)
       .expect("Content-Type", /application\/json/);
   });
 });
@@ -168,15 +206,51 @@ describe("PUT /api/blogs/:id - Updating a blog by ID", () => {
 });
 
 describe("DELETE /api/blogs/:id - Deleting a blog by ID", () => {
-  test("succeeds with status code 204 if id is valid", async () => {
+  let token;
+  let user;
+  let blogToDelete;
+
+  beforeEach(async () => {
+    // Ensure no existing user with the same username
+    await User.deleteOne({ username: "testuser" });
+
+    // Create a user for authentication
+    user = new User({
+      username: "testuser",
+      name: "Test User",
+      passwordHash: "hashedpassword",
+    });
+    await user.save();
+
+    await Blog.findOneAndDelete({ title: "Test Blog" });
+
+    const blog = new Blog({
+      title: "Test Blog",
+      author: "Test Tester",
+      url: "https://disneyparksblog.com/community-outreach/disney-parks-costumers-sew-holiday-happiness-behind-the-scenes/",
+      likes: 2,
+      user: user._id, // Associate the blog with the user
+    });
+
+    blogToDelete = await blog.save(); // Save and get the blog instance
+
+    // Generate a JWT token for the user
+    token = jwt.sign({ id: user._id }, process.env.SECRET, { expiresIn: "1h" });
+  });
+
+  test("succeeds with status code 204 if id is valid and user is authorized", async () => {
+    // Initial count of blogs
     const blogsAtStart = await helper.blogsInDb();
-    const blogToDelete = blogsAtStart[0];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    // Add token in Authorization header
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .expect(204);
 
+    // Verify blog is deleted
     const blogsAtEnd = await helper.blogsInDb();
-
-    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1);
+    assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1);
 
     const contents = blogsAtEnd.map((b) => b.title);
     assert(!contents.includes(blogToDelete.title));
@@ -185,13 +259,19 @@ describe("DELETE /api/blogs/:id - Deleting a blog by ID", () => {
   test("fails with status code 404 if blog does not exist", async () => {
     const validNonexistingId = await helper.nonExistingId();
 
-    await api.delete(`/api/blogs/${validNonexistingId}`).expect(404);
+    await api
+      .delete(`/api/blogs/${validNonexistingId}`)
+      .set("Authorization", `Bearer ${token}`)
+      .expect(404);
   });
 
   test("fails with statuscode 400 if id is invalid", async () => {
     const invalidId = "5a3d5da59070081a82a3445";
 
-    await api.delete(`/api/blogs/${invalidId}`).expect(400);
+    await api
+      .delete(`/api/blogs/${invalidId}`)
+      .set("Authorization", `Bearer ${token}`)
+      .expect(400);
   });
 });
 
