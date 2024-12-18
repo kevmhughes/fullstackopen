@@ -2,21 +2,33 @@ import { useState, useEffect } from "react";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import Blog from "./components/Blog";
+import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [newBlog, setNewBlog] = useState("");
+  const [newBlog, setNewBlog] = useState({
+    title: "",
+    author: "",
+    url: "",
+  });
   const [showAll, setShowAll] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [message, setMessage] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
 
-  console.log("username", username);
+  /*   console.log("username", username);
   console.log("password", password);
   console.log("user", user);
+  console.log("title", newBlog.title);
+  console.log("author", newBlog.author);
+  console.log("url", newBlog.url);
+  console.log("errorMessage", errorMessage) */
+  console.log("message", message);
+  console.log("newBlog", newBlog);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -52,6 +64,31 @@ const App = () => {
     }
   };
 
+  const handleAddBlog = async (event) => {
+    event.preventDefault();
+    try {
+      const blog = await blogService.create(newBlog);
+      blogService.setToken(user.token);
+      setNewBlog(blog);
+      setNewBlog({ title: "", author: "", url: "" });
+      setMessage(
+        `A new blog ${newBlog.title} by ${newBlog.author} has been added.`
+      );
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
+    } catch (error) {
+      const errorMessage =
+        error.response && error.response.data
+          ? error.response.data.error
+          : "An error occurred while adding the blog. Please try again later.";
+      setErrorMessage(errorMessage);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
+
   const handleLogOut = () => {
     window.localStorage.removeItem("loggedBlogappUser");
     setUser(null);
@@ -59,9 +96,9 @@ const App = () => {
 
   return (
     <div className="container">
-      <h1>Blogs</h1>
+      <h1 style={{ marginTop: "1rem" }}>Blogs</h1>
 
-      {/* <Notification message={errorMessage} /> */}
+      <Notification errorMessage={errorMessage} message={message} />
 
       {user === null ? (
         <LoginForm
@@ -75,9 +112,9 @@ const App = () => {
         <div>
           <p>{user.name} logged-in</p>
           <BlogForm
-            addBlog={"addBlog"}
+            addBlog={handleAddBlog}
             newBlog={newBlog}
-            handleBlogChange={"handleBlogChange"}
+            setNewBlog={setNewBlog}
           />
         </div>
       )}
@@ -86,9 +123,11 @@ const App = () => {
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
-      <button style={{ marginTop: "1rem" }} onClick={handleLogOut}>
-        Log Out
-      </button>
+      {user !== null && (
+        <button style={{ marginTop: "1rem" }} onClick={handleLogOut}>
+          Log Out
+        </button>
+      )}
     </div>
   );
 };
