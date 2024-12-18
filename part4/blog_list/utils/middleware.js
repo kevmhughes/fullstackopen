@@ -11,7 +11,7 @@ const requestLogger = (request, response, next) => {
 };
 
 const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: "unknown endpoint" });
+  response.status(404).send({ error: "Unknown endpoint." });
 };
 
 const tokenExtractor = (request, response, next) => {
@@ -43,14 +43,14 @@ const userExtractor = async (request, response, next) => {
 
     // If the token is invalid or not present, return an error
     if (!decodedToken.id) {
-      return response.status(401).json({ error: "Token invalid or missing" });
+      return response.status(401).json({ error: "Token invalid or missing." });
     }
 
     // Find the user based on the decoded token's id
     const user = await User.findById(decodedToken.id);
 
     if (!user) {
-      return response.status(404).json({ error: "User not found" });
+      return response.status(404).json({ error: "User not found." });
     }
 
     // Attach the user to the request object
@@ -65,7 +65,7 @@ const errorHandler = (error, request, response, next) => {
   logger.error(error.message);
 
   if (error.name === "CastError") {
-    return response.status(400).send({ error: "malformatted id" });
+    return response.status(400).send({ error: "Malformatted id." });
   } else if (error.name === "ValidationError") {
     return response.status(400).json({ error: error.message });
   } else if (
@@ -76,7 +76,7 @@ const errorHandler = (error, request, response, next) => {
       .status(400)
       .json({ error: "expected `username` to be unique" });
   } else if (error.name === "JsonWebTokenError") {
-    return response.status(401).json({ error: "token invalid" });
+    return response.status(401).json({ error: "Token invalid." });
   } else if (error.name === "TokenExpiredError") {
     return response.status(401).json({
       error: "token expired",
@@ -84,7 +84,7 @@ const errorHandler = (error, request, response, next) => {
   }
 
   // Catch-all for any other error (usually server errors)
-  response.status(500).json({ error: "something went wrong on the server" });
+  response.status(500).json({ error: "Something went wrong on the server." });
 
   next(error);
 };

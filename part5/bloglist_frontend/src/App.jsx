@@ -5,6 +5,7 @@ import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import "./assets/styles/main.css";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -56,8 +57,12 @@ const App = () => {
       setUser(user);
       setUsername("");
       setPassword("");
-    } catch (exception) {
-      setErrorMessage("Wrong credentials");
+    } catch (error) {
+      const errorMessage =
+        error.response && error.response.data
+          ? error.response.data.error
+          : "An error occurred while logging in. Please try again later.";
+      setErrorMessage(errorMessage);
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
@@ -71,9 +76,7 @@ const App = () => {
       blogService.setToken(user.token);
       setNewBlog(blog);
       setNewBlog({ title: "", author: "", url: "" });
-      setMessage(
-        `A new blog ${newBlog.title} by ${newBlog.author} has been added.`
-      );
+      setMessage(`${newBlog.title} by ${newBlog.author} has been added.`);
       setTimeout(() => {
         setMessage(null);
       }, 5000);
@@ -110,7 +113,7 @@ const App = () => {
         />
       ) : (
         <div>
-          <p>{user.name} logged-in</p>
+          <div style={{ marginBottom: "1rem" }}>{user.name} logged-in</div>
           <BlogForm
             addBlog={handleAddBlog}
             newBlog={newBlog}

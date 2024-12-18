@@ -5,7 +5,11 @@ const Notification = ({ errorMessage, message }) => {
     return null;
   }
 
-  return <div>{message || errorMessage}</div>;
+  const messageClassname = () => {
+    return message ? "success" : "error";
+  };
+
+  return <div className={messageClassname()}>{message || errorMessage}</div>;
 };
 
 export default Notification;

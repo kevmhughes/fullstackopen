@@ -22,13 +22,13 @@ blogsRouter.post("/", async (request, response, next) => {
 
   // Check for missing required fields and provide specific error messages
   if (!title) {
-    return response.status(400).json({ error: "Title is required" });
+    return response.status(400).json({ error: "Title is required." });
   }
   if (!url) {
-    return response.status(400).json({ error: "URL is required" });
+    return response.status(400).json({ error: "URL is required." });
   }
   if (!author) {
-    return response.status(400).json({ error: "Author is required" });
+    return response.status(400).json({ error: "Author is required." });
   }
 
   // get user from request object
@@ -38,12 +38,12 @@ blogsRouter.post("/", async (request, response, next) => {
   const token = request.token;
 
   if (!token) {
-    return response.status(401).json({ error: "Token missing" });
+    return response.status(401).json({ error: "Token missing." });
   }
 
   const decodedToken = jwt.verify(token, process.env.SECRET);
   if (!decodedToken.id) {
-    return response.status(401).json({ error: "token invalid" });
+    return response.status(401).json({ error: "token invalid." });
   }
 
   const blog = new Blog({
@@ -71,14 +71,14 @@ blogsRouter.get("/:id", async (request, response, next) => {
     if (blog) {
       response.json(blog);
     } else {
-      response.status(404).json({ error: "Blog not found" });
+      response.status(404).json({ error: "Blog not found." });
     }
   } catch (err) {
     logger.error("Error fetching blog:", err.message);
 
     // Check for a CastError, which happens when the id is not a valid ObjectId
     if (err.name === "CastError") {
-      return response.status(400).json({ error: "Malformatted ID" });
+      return response.status(400).json({ error: "Malformatted ID." });
     }
 
     next(err);
@@ -102,14 +102,14 @@ blogsRouter.put("/:id", async (request, response, next) => {
     if (blogUpdated) {
       response.status(200).json(blogUpdated);
     } else {
-      response.status(404).json({ error: "Blog not found" });
+      response.status(404).json({ error: "Blog not found." });
     }
   } catch (err) {
     logger.error("Error updating blog:", err.message);
 
     // Check for a CastError, which happens when the id is not a valid ObjectId
     if (err.name === "CastError") {
-      return response.status(400).json({ error: "Malformatted ID" });
+      return response.status(400).json({ error: "Malformatted ID." });
     }
 
     next(err);
@@ -119,7 +119,7 @@ blogsRouter.put("/:id", async (request, response, next) => {
 blogsRouter.delete("/:id", async (request, response, next) => {
   // Check if the ID is valid (valid ObjectId format)
   if (!mongoose.Types.ObjectId.isValid(request.params.id)) {
-    return response.status(400).json({ error: "Malformatted ID" });
+    return response.status(400).json({ error: "Malformatted ID." });
   }
 
   const blogIdToDelete = request.params.id;
@@ -129,26 +129,26 @@ blogsRouter.delete("/:id", async (request, response, next) => {
   const token = request.token;
 
   if (!token) {
-    return response.status(401).json({ error: "Token missing" });
+    return response.status(401).json({ error: "Token missing." });
   }
 
   try {
     // Verify token
     const decodedToken = jwt.verify(token, process.env.SECRET);
     if (!decodedToken.id) {
-      return response.status(401).json({ error: "token invalid" });
+      return response.status(401).json({ error: "Token invalid." });
     }
 
     // Ensure the blog is associated with the user
     const blogToDelete = await Blog.findById(blogIdToDelete);
     if (!blogToDelete) {
-      return response.status(404).json({ error: "Blog not found" });
+      return response.status(404).json({ error: "Blog not found." });
     }
 
     if (blogToDelete.user.toString() !== decodedToken.id) {
       return response
         .status(403)
-        .json({ error: "Unauthorized to delete this blog" });
+        .json({ error: "Unauthorized to delete this blog." });
     }
 
     // Delete the blog from Blog model
@@ -166,7 +166,7 @@ blogsRouter.delete("/:id", async (request, response, next) => {
 
     // Check for a CastError, which happens when the id is not a valid ObjectId
     if (err.name === "CastError") {
-      return response.status(400).json({ error: "Malformatted ID" });
+      return response.status(400).json({ error: "Malformatted ID." });
     }
 
     next(err);

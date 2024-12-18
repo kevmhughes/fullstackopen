@@ -10,7 +10,7 @@ usersRouter.get("/", async (request, response) => {
     console.error(error);
     response
       .status(500)
-      .json({ error: "An unexpected error occurred while retrieving users" });
+      .json({ error: "An unexpected error occurred while retrieving users." });
   }
 });
 
@@ -20,27 +20,27 @@ usersRouter.post("/", async (request, response) => {
 
     // Check for missing required fields and provide specific error messages
     if (!username) {
-      return response.status(400).json({ error: "Username is required" });
+      return response.status(400).json({ error: "Username is required." });
     }
     if (!password) {
-      return response.status(400).json({ error: "Password is required" });
+      return response.status(400).json({ error: "Password is required." });
     }
     // Check for inputted data lengths
     if (username.length < 3) {
       return response
         .status(400)
-        .json({ error: "Username must be at least 3 characters long" });
+        .json({ error: "Username must be at least 3 characters long." });
     }
     if (password.length < 3) {
       return response
         .status(400)
-        .json({ error: "Password must be at least 3 characters long" });
+        .json({ error: "Password must be at least 3 characters long." });
     }
 
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return response.status(400).json({
-        error: "Username must be unique",
+        error: "Username must be unique.",
       });
     }
 
@@ -58,7 +58,7 @@ usersRouter.post("/", async (request, response) => {
     response.status(201).json(savedUser);
   } catch (error) {
     console.error(error);
-    response.status(500).json({ error: "An unexpected error occurred" });
+    response.status(500).json({ error: "An unexpected error occurred." });
   }
 });
 
