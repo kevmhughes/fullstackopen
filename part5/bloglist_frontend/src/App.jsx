@@ -5,6 +5,7 @@ import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import Togglable from "./components/Togglable";
 import "./assets/styles/main.css";
 
 const App = () => {
@@ -20,19 +21,19 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-
-  /*   console.log("username", username);
-  console.log("password", password);
-  console.log("user", user);
-  console.log("title", newBlog.title);
-  console.log("author", newBlog.author);
-  console.log("url", newBlog.url);
-  console.log("errorMessage", errorMessage) */
-  console.log("message", message);
-  console.log("newBlog", newBlog);
+  const [blogFormVisible, setBlogFormVisible] = useState(false);
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    const fetchBlogs = async () => {
+      try {
+        const blogs = await blogService.getAll();
+        setBlogs(blogs); // Update the state with the fetched blogs
+      } catch (error) {
+        console.error("Failed to fetch blogs:", error);
+      }
+    };
+
+    fetchBlogs(); // Call the async function
   }, []);
 
   useEffect(() => {
@@ -74,7 +75,8 @@ const App = () => {
     try {
       const blog = await blogService.create(newBlog);
       blogService.setToken(user.token);
-      setNewBlog(blog);
+      setBlogs((prevBlogs) => [...prevBlogs, blog]); // Add the new blog to the current list of blogs
+      setBlogFormVisible(false);
       setNewBlog({ title: "", author: "", url: "" });
       setMessage(`${newBlog.title} by ${newBlog.author} has been added.`);
       setTimeout(() => {
@@ -97,6 +99,9 @@ const App = () => {
     setUser(null);
   };
 
+  const hideWhenVisible = { display: blogFormVisible ? "none" : "" };
+  const showWhenVisible = { display: blogFormVisible ? "" : "none" };
+
   return (
     <div className="container">
       <h1 style={{ marginTop: "1rem" }}>Blogs</h1>
@@ -108,17 +113,25 @@ const App = () => {
           handleLogin={handleLogin}
           password={password}
           username={username}
-          setPassword={setPassword}
-          setUsername={setUsername}
+          setPassword={({ target }) => setPassword(target.value)}
+          setUsername={({ target }) => setUsername(target.value)}
         />
       ) : (
-        <div>
+        <div style={{ marginBottom: "2rem" }}>
           <div style={{ marginBottom: "1rem" }}>{user.name} logged-in</div>
-          <BlogForm
-            addBlog={handleAddBlog}
-            newBlog={newBlog}
-            setNewBlog={setNewBlog}
-          />
+          <Togglable
+            buttonLabel="Create Blog"
+            blogFormVisible={blogFormVisible}
+            setBlogFormVisible={setBlogFormVisible}
+            hideWhenVisible={hideWhenVisible}
+            showWhenVisible={showWhenVisible}
+          >
+            <BlogForm
+              addBlog={handleAddBlog}
+              newBlog={newBlog}
+              setNewBlog={setNewBlog}
+            />
+          </Togglable>
         </div>
       )}
 

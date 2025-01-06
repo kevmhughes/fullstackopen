@@ -7,6 +7,14 @@ loginRouter.post("/", async (request, response) => {
   try {
     const { username, password } = request.body;
 
+  // Check for missing required fields and provide specific error messages
+  if (!username) {
+    return response.status(400).json({ error: "Username is required." });
+  }
+  if (!password) {
+    return response.status(400).json({ error: "Password is required." });
+  }
+
     const user = await User.findOne({ username });
     const passwordCorrect =
       user === null ? false : await bcrypt.compare(password, user.passwordHash);
