@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import Blog from "./components/Blog";
@@ -10,12 +10,6 @@ import "./assets/styles/main.css";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [newBlog, setNewBlog] = useState({
-    title: "",
-    author: "",
-    url: "",
-  });
-  const [showAll, setShowAll] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const [message, setMessage] = useState(null);
   const [username, setUsername] = useState("");
@@ -45,6 +39,8 @@ const App = () => {
     }
   }, []);
 
+  const blogFormRef = useRef();
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -70,14 +66,17 @@ const App = () => {
     }
   };
 
-  const handleAddBlog = async (event) => {
-    event.preventDefault();
+  const handleLogOut = () => {
+    window.localStorage.removeItem("loggedBlogappUser");
+    setUser(null);
+  };
+
+  const addBlog = async (newBlog) => {
     try {
       const blog = await blogService.create(newBlog);
+      blogFormRef.current.toggleVisibility();
       blogService.setToken(user.token);
-      setBlogs((prevBlogs) => [...prevBlogs, blog]); // Add the new blog to the current list of blogs
-      setBlogFormVisible(false);
-      setNewBlog({ title: "", author: "", url: "" });
+      setBlogs((prevBlogs) => [...prevBlogs, blog]);
       setMessage(`${newBlog.title} by ${newBlog.author} has been added.`);
       setTimeout(() => {
         setMessage(null);
@@ -86,21 +85,13 @@ const App = () => {
       const errorMessage =
         error.response && error.response.data
           ? error.response.data.error
-          : "An error occurred while adding the blog. Please try again later.";
+          : "An error occurred while adding the blog.";
       setErrorMessage(errorMessage);
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
     }
   };
-
-  const handleLogOut = () => {
-    window.localStorage.removeItem("loggedBlogappUser");
-    setUser(null);
-  };
-
-  const hideWhenVisible = { display: blogFormVisible ? "none" : "" };
-  const showWhenVisible = { display: blogFormVisible ? "" : "none" };
 
   return (
     <div className="container">
@@ -123,14 +114,9 @@ const App = () => {
             buttonLabel="Create Blog"
             blogFormVisible={blogFormVisible}
             setBlogFormVisible={setBlogFormVisible}
-            hideWhenVisible={hideWhenVisible}
-            showWhenVisible={showWhenVisible}
+            ref={blogFormRef}
           >
-            <BlogForm
-              addBlog={handleAddBlog}
-              newBlog={newBlog}
-              setNewBlog={setNewBlog}
-            />
+            <BlogForm addBlog={addBlog} />
           </Togglable>
         </div>
       )}
