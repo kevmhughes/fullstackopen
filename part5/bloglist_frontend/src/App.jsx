@@ -93,6 +93,8 @@ const App = () => {
     }
   };
 
+  console.log("blogs", blogs)
+
   return (
     <div className="container">
       <h1 style={{ marginTop: "1rem" }}>Blogs</h1>
@@ -111,7 +113,7 @@ const App = () => {
         <div style={{ marginBottom: "2rem" }}>
           <div style={{ marginBottom: "1rem" }}>{user.name} logged-in</div>
           <Togglable
-            buttonLabel="Create Blog"
+            buttonLabel={!blogFormVisible ? "Create Blog" : "Cancel"}
             blogFormVisible={blogFormVisible}
             setBlogFormVisible={setBlogFormVisible}
             ref={blogFormRef}

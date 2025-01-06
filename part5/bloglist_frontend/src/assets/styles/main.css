@@ -1,3 +1,10 @@
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
 .success {
   color: green;
   border: solid, 2px, green;
@@ -13,5 +20,18 @@
   padding: 0.5rem;
   border-radius: 5px;
   width: fit-content;
+  margin-bottom: 1rem;
+}
+
+/* blog */
+
+.basic-blog-info {
+  border: 1px solid black;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+}
+
+.author {
   margin-bottom: 1rem;
 }
