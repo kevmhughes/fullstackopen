@@ -17,16 +17,17 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [blogFormVisible, setBlogFormVisible] = useState(false);
 
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const blogs = await blogService.getAll();
-        setBlogs(blogs); // Update the state with the fetched blogs
-      } catch (error) {
-        console.error("Failed to fetch blogs:", error);
-      }
-    };
+  const fetchBlogs = async () => {
+    try {
+      const blogs = await blogService.getAll();
+      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
+      setBlogs(sortedBlogs); // Update the state with the fetched blogs
+    } catch (error) {
+      console.error("Failed to fetch blogs:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchBlogs(); // Call the async function
   }, []);
 
@@ -77,6 +78,7 @@ const App = () => {
       blogFormRef.current.toggleVisibility();
       blogService.setToken(user.token);
       setBlogs((prevBlogs) => [...prevBlogs, blog]);
+      fetchBlogs();
       setMessage(`${newBlog.title} by ${newBlog.author} has been added.`);
       setTimeout(() => {
         setMessage(null);
@@ -115,7 +117,18 @@ const App = () => {
 
   return (
     <div className="container">
-      <h1 style={{ marginTop: "1rem" }}>Blogs</h1>
+      {user !== null && (
+        <header>
+          <div className="user-logged-in">{user.name} is logged-in</div>
+          <button
+            style={{ marginTop: "1rem", marginBottom: "1rem" }}
+            onClick={handleLogOut}
+          >
+            Log Out
+          </button>
+        </header>
+      )}
+      <h1 style={{ marginTop: "1rem", textAlign: "center" }}>Blogs</h1>
 
       <Notification errorMessage={errorMessage} message={message} />
 
@@ -129,7 +142,6 @@ const App = () => {
         />
       ) : (
         <div style={{ marginBottom: "2rem" }}>
-          <div style={{ marginBottom: "1rem" }}>{user.name} logged-in</div>
           <Togglable
             buttonLabel={!blogFormVisible ? "Create Blog" : "Cancel"}
             blogFormVisible={blogFormVisible}
@@ -140,16 +152,10 @@ const App = () => {
           </Togglable>
         </div>
       )}
-
-      <h2>blogs</h2>
+      <h2>Most Liked Blogs</h2>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} addLike={addLike} />
       ))}
-      {user !== null && (
-        <button style={{ marginTop: "1rem" }} onClick={handleLogOut}>
-          Log Out
-        </button>
-      )}
     </div>
   );
 };

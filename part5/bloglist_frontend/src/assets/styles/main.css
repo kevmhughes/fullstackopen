@@ -23,10 +23,26 @@ a:hover {
   margin-bottom: 1rem;
 }
 
+/* main */
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.user-logged-in {
+  border: 1px green solid;
+  padding: 0.75rem;
+  border-radius: 5px;
+  color: green;
+}
+
 /* blog */
 
 .basic-blog-info {
-  border: 1px solid black;
+  border: 1px solid #e3e2e2;
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 5px;
