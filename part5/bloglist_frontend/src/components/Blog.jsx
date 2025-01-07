@@ -7,7 +7,7 @@ const Blog = ({ blog, addLike }) => {
 
   const handleAddLike = async (event) => {
     event.preventDefault();
-    const updatedBlog = { ...blog, likes: blog.likes + 1 }; // Increment likes
+    const updatedBlog = { ...blog, likes: blog.likes + 1 }; // Increment likes by 1
     addLike(blog.id, updatedBlog); // Call addLike with updated data
   };
 
