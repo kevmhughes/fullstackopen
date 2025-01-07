@@ -2,8 +2,14 @@ import React, { useState } from "react";
 import Togglable from "./Togglable";
 import "../assets/styles/main.css";
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, addLike }) => {
   const [blogVisible, setBlogVisible] = useState(false);
+
+  const handleAddLike = async (event) => {
+    event.preventDefault();
+    const updatedBlog = { ...blog, likes: blog.likes + 1 }; // Increment likes
+    addLike(blog.id, updatedBlog); // Call addLike with updated data
+  };
 
   return (
     <>
@@ -30,7 +36,12 @@ const Blog = ({ blog }) => {
                 </p>
               </>
             )}
-            <p>Likes: {blog.likes}</p>
+            <div className="likes-container">
+              <div>{blog.likes}</div>
+              <div onClick={handleAddLike}>
+                <i class="fas fa-thumbs-up"></i>
+              </div>
+            </div>
           </div>
         </Togglable>
       </div>

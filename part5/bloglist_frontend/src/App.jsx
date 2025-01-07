@@ -93,7 +93,25 @@ const App = () => {
     }
   };
 
-  console.log("blogs", blogs)
+  const addLike = async (id, updatedBlog) => {
+    try {
+      const blog = await blogService.update(id, updatedBlog);
+      setBlogs(
+        (prevBlogs) => prevBlogs.map((b) => (b.id === blog.id ? blog : b)) // Update the specific blog
+      );
+    } catch (error) {
+      const errorMessage =
+        error.response && error.response.data
+          ? error.response.data.error
+          : "An error occurred while updating the blog.";
+      setErrorMessage(errorMessage);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
+
+  console.log("blogs", blogs);
 
   return (
     <div className="container">
@@ -125,7 +143,7 @@ const App = () => {
 
       <h2>blogs</h2>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} addLike={addLike} />
       ))}
       {user !== null && (
         <button style={{ marginTop: "1rem" }} onClick={handleLogOut}>

@@ -35,3 +35,21 @@ a:hover {
 .author {
   margin-bottom: 1rem;
 }
+
+.likes-container {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+fa-solid,
+.fas {
+  color: #0472ad;
+}
+
+fa-solid,
+.fas:hover {
+  color: #02659a;
+  cursor: pointer;
+}
