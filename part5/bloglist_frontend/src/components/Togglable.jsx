@@ -3,7 +3,6 @@ import { forwardRef, useImperativeHandle } from "react";
 
 const Togglable = forwardRef(
   ({ buttonLabel, children, blogFormVisible, setBlogFormVisible }, refs) => {
-    
     const hideWhenVisible = { display: blogFormVisible ? "none" : "" };
     const showWhenVisible = { display: blogFormVisible ? "" : "none" };
 

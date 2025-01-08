@@ -39,6 +39,13 @@ header {
   color: green;
 }
 
+.blogs-container {
+  padding: 1rem;
+  background-color: white;
+  border: 1px solid #e3e2e2;
+  border-radius: 5px;
+}
+
 /* blog */
 
 .basic-blog-info {
@@ -46,6 +53,7 @@ header {
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 5px;
+  background-color: #0000000a;
 }
 
 .author {

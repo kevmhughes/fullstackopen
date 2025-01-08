@@ -97,9 +97,14 @@ const App = () => {
 
   const addLike = async (id, updatedBlog) => {
     try {
+      // Update the blog with new like count
       const blog = await blogService.update(id, updatedBlog);
-      setBlogs(
-        (prevBlogs) => prevBlogs.map((b) => (b.id === blog.id ? blog : b)) // Update the specific blog
+
+      // Update state immutably with the updated blog
+      setBlogs((prevBlogs) =>
+        prevBlogs.map((b) =>
+          b.id === blog.id ? { ...b, likes: blog.likes } : b
+        )
       );
     } catch (error) {
       const errorMessage =
@@ -113,7 +118,55 @@ const App = () => {
     }
   };
 
-  console.log("blogs", blogs);
+  const deleteBlog = async (id) => {
+    // Retrieve the logged-in user's token from local storage
+    const storedUser = localStorage.getItem("loggedBlogappUser");
+    const user = storedUser ? JSON.parse(storedUser) : null;
+    const token = user ? user.token : null;
+
+    if (!token) {
+      setErrorMessage("You must be logged in to delete a blog.");
+      setTimeout(() => setErrorMessage(null), 5000);
+      return;
+    }
+
+    // Confirm if the user really wants to delete the blog
+    const isConfirmed = window.confirm(
+      "Do you really want to delete that blog?"
+    );
+
+    if (isConfirmed) {
+      try {
+        const blogToDelete = await blogService.getById(id);
+        if (!blogToDelete) {
+          setErrorMessage("Blog not found.");
+          setTimeout(() => setErrorMessage(null), 5000);
+          return;
+        }
+
+        // Make the request with the correct headers
+        await blogService.deleteBlog(id, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id));
+
+        setMessage(`${blogToDelete.title} has been deleted successfully.`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
+      } catch (error) {
+        setErrorMessage("An error occurred while deleting the blog.");
+        setTimeout(() => setErrorMessage(null), 5000);
+        console.error("Error deleting blog:", error);
+      }
+    } else {
+      // Handle cancelation if the user clicks "Cancel"
+      console.log("Blog deletion canceled.");
+    }
+  };
 
   return (
     <div className="container">
@@ -152,10 +205,18 @@ const App = () => {
           </Togglable>
         </div>
       )}
-      <h2>Most Liked Blogs</h2>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} addLike={addLike} />
-      ))}
+      <div className="blogs-container">
+        <h2>Most Liked Blogs</h2>
+        {blogs.map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            user={user}
+            addLike={addLike}
+            deleteBlog={deleteBlog}
+          />
+        ))}
+      </div>
     </div>
   );
 };
