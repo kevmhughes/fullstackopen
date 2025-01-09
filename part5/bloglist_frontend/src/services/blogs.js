@@ -17,7 +17,7 @@ const getById = async (id) => {
   const request = axios.get(`${baseUrl}/${id}`);
   const response = await request;
   return response.data;
-}
+};
 
 const create = async (newObject) => {
   const config = {

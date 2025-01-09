@@ -1,5 +1,6 @@
 import React from "react";
 import { forwardRef, useImperativeHandle } from "react";
+import PropTypes from "prop-types";
 
 const Togglable = forwardRef(
   ({ buttonLabel, children, blogFormVisible, setBlogFormVisible }, refs) => {
@@ -17,7 +18,7 @@ const Togglable = forwardRef(
     });
 
     return (
-      <div>
+      <div className="create-blog-container">
         <div style={hideWhenVisible}>
           <button onClick={toggleVisibility}>{buttonLabel}</button>
         </div>
@@ -30,4 +31,10 @@ const Togglable = forwardRef(
   }
 );
 
+Togglable.displayName = "Togglable";
+
 export default Togglable;
+
+Togglable.propTypes = {
+  buttonLabel: PropTypes.string.isRequired,
+};
