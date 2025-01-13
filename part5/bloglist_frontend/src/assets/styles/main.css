@@ -6,6 +6,10 @@ a:hover {
   text-decoration: underline;
 }
 
+h3 {
+  font-size: 1.25rem;
+}
+
 .success {
   color: green;
   border: solid, 2px, green;
@@ -62,10 +66,6 @@ header {
   margin-bottom: 1rem;
   border-radius: 5px;
   background-color: #0000000a;
-}
-
-.author {
-  margin-bottom: 1rem;
 }
 
 .likes-container {

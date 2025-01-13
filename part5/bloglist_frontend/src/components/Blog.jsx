@@ -18,7 +18,9 @@ const Blog = ({ blog, user, addLike, deleteBlog }) => {
   return (
     <>
       <div className="basic-blog-info">
-        <h3>{blog.title}</h3>
+        <h3 className="blog-title-and-author">
+          {blog.title} by {blog.author}
+        </h3>
         <Togglable
           buttonLabel={blogVisible ? "Hide Details" : "Show Details"}
           blogFormVisible={blogVisible}
@@ -27,7 +29,6 @@ const Blog = ({ blog, user, addLike, deleteBlog }) => {
           <div className="blog-details">
             {blog.url && (
               <>
-                <div className="author">Author: {blog.author}</div>
                 <p className="blog-url">
                   <a
                     className="blog-url-link"
