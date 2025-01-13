@@ -43,7 +43,7 @@ const Blog = ({ blog, user, addLike, deleteBlog }) => {
             )}
             <div className="likes-container">
               <div>{blog.likes}</div>
-              <div onClick={handleAddLike}>
+              <div onClick={handleAddLike} data-testid="likes-button">
                 <i className="fas fa-thumbs-up"></i>
               </div>
             </div>

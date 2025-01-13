@@ -1,4 +1,5 @@
 import { render, screen, fireEvent, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import Blog from "./Blog";
 
 test("renders blog title and author, but not URL or likes by default", () => {
@@ -63,4 +64,33 @@ test("shows blog URL and likes when the 'Show Details' button is clicked", () =>
 
   const visibleLikesElement = screen.getByText(/0/); // Adjust the query to match the likes text
   expect(visibleLikesElement).toBeInTheDocument();
+});
+
+test("when the like button is clicked twice, the event handler is called twice", async () => {
+  const blog = {
+    title: "Dave's Fourth Blog",
+    author: "David James",
+    url: "https://disneyparksblog.com/community-outreach/disney-parks-costumers-sew-holiday-happiness-behind-the-scenes",
+    likes: 0,
+    user: [{ username: "passworddave" }],
+    id: "6763078af8dabca70b458b32",
+  };
+
+  // Create a mock function to track calls
+  const mockHandler = vi.fn();
+
+  // Render the Blog component with the mock function passed as addLike
+  render(
+    <Blog blog={blog} user={null} addLike={mockHandler} deleteBlog={() => {}} />
+  );
+
+  const user = userEvent.setup();
+  const button = screen.getByTestId("likes-button");
+
+  // Simulate two clicks on the like button
+  await user.click(button);
+  await user.click(button);
+
+  // Assert that the handler was called twice
+  expect(mockHandler).toHaveBeenCalledTimes(2);
 });
