@@ -66,6 +66,7 @@ test("shows blog URL and likes when the 'Show Details' button is clicked", () =>
   expect(visibleLikesElement).toBeInTheDocument();
 });
 
+
 test("when the like button is clicked twice, the event handler is called twice", async () => {
   const blog = {
     title: "Dave's Fourth Blog",
@@ -93,4 +94,5 @@ test("when the like button is clicked twice, the event handler is called twice",
 
   // Assert that the handler was called twice
   expect(mockHandler).toHaveBeenCalledTimes(2);
+
 });
