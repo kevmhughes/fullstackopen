@@ -12,7 +12,7 @@ const LoginForm = ({
     <>
       <h2>Login</h2>
 
-      <form onSubmit={handleLogin}>
+      <form id="login-form" onSubmit={handleLogin}>
         <div>
           username
           <input
@@ -44,6 +44,5 @@ LoginForm.propTypes = {
   setUsername: PropTypes.func.isRequired,
   setPassword: PropTypes.func.isRequired,
 };
-
 
 export default LoginForm;
