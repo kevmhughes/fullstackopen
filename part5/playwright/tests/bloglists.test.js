@@ -1,9 +1,11 @@
+const { loginWith, createBlog } = require("./helper");
+
 const { test, expect, beforeEach, describe } = require("@playwright/test");
 
 describe("Blog app", () => {
   beforeEach(async ({ page, request }) => {
-    await request.post("http://localhost:3003/api/testing/reset");
-    await request.post("http://localhost:3003/api/users", {
+    await request.post("/api/testing/reset");
+    await request.post("/api/users", {
       data: {
         name: "Matti Luukkainen",
         username: "mluukkai",
@@ -11,7 +13,7 @@ describe("Blog app", () => {
       },
     });
 
-    await page.goto("http://localhost:5173");
+    await page.goto("/");
   });
 
   test("Login form is shown", async ({ page }) => {
@@ -20,9 +22,7 @@ describe("Blog app", () => {
   });
 
   test("succeeds with correct credentials", async ({ page }) => {
-    await page.getByTestId("username").fill("mluukkai");
-    await page.getByTestId("password").fill("salainen");
-    await page.getByRole("button", { name: "login" }).click();
+    await loginWith(page, "mluukkai", "salainen");
     await expect(page.getByText("Matti Luukkainen is logged-in")).toBeVisible();
   });
 
@@ -33,5 +33,37 @@ describe("Blog app", () => {
     const errorDiv = page.locator(".error");
     await expect(errorDiv).toContainText("Invalid username or password.");
     await expect(errorDiv).toHaveCSS("color", "rgb(255, 0, 0)");
+  });
+
+  describe("when logged in", () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, "mluukkai", "salainen");
+    });
+
+    test("a new blog can be created", async ({ page }) => {
+      // Create a new blog
+      await createBlog(page, "Matti Luukkainen");
+
+      // Wait for the blog creation API response
+      const [response] = await Promise.all([
+        page.waitForResponse(
+          (response) =>
+            response.url().includes("/api/blogs") && response.status() === 200
+        ),
+        page.getByRole("button", { name: "Add Blog" }).click(),
+      ]);
+
+      // Ensure the blog creation was successful (API status check)
+      expect(response.status()).toBe(200);
+
+      // Check for success confirmation message
+      await expect(
+        page.getByText("My Blog by Matti Luukkainen has been added")
+      ).toBeVisible();
+
+      // Verify that the new blog appears with the correct title in the blog list
+      const blogHeader = await page.locator("h3").textContent();
+      expect(blogHeader).toContain("My Blog by Matti Luukkainen");
+    });
   });
 });
