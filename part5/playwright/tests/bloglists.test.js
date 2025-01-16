@@ -65,5 +65,18 @@ describe("Blog app", () => {
       const blogHeader = await page.locator("h3").textContent();
       expect(blogHeader).toContain("My Blog by Matti Luukkainen");
     });
+
+    test("a new blog can be liked", async ({ page }) => {
+      // Create a new blog
+      await createBlog(page, "Matti Luukkainen");
+      // Find Show Details button and click
+      await page.getByRole("button", { name: "Show Details" }).click();
+      // Check that there are 0 default likes
+      await expect(page.getByText("0")).toBeVisible();
+      // Click like
+      await page.locator('[data-testid="likes-button"]').click();
+      // Check that likes have incremented by 1
+      await expect(page.getByText("1")).toBeVisible();
+    });
   });
 });
