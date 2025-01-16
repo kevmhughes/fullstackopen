@@ -66,7 +66,7 @@ describe("Blog app", () => {
       expect(blogHeader).toContain("My Blog by Matti Luukkainen");
     });
 
-    test("a new blog can be liked", async ({ page }) => {
+    test("a blog can be liked", async ({ page }) => {
       // Create a new blog
       await createBlog(page, "Matti Luukkainen");
       // Find Show Details button and click
@@ -77,6 +77,29 @@ describe("Blog app", () => {
       await page.locator('[data-testid="likes-button"]').click();
       // Check that likes have incremented by 1
       await expect(page.getByText("1")).toBeVisible();
+    });
+
+    test("a blog can be deleted", async ({ page }) => {
+      // Create a new blog
+      await createBlog(page, "Matti Luukkainen");
+      // Find Show Details button and click
+      await page.getByRole("button", { name: "Show Details" }).click();
+
+      // Listen for the confirmation dialog and click "OK" to confirm the deletion
+      page.on("dialog", async (dialog) => {
+        expect(dialog.message()).toContain(
+          "Do you really want to delete that blog?"
+        );
+        await dialog.accept(); // Accept the dialog (click "OK")
+      });
+
+      // Click the "Delete" button to trigger the dialog
+      await page.getByRole("button", { name: "Delete" }).click();
+
+      // Ensure that the blog is no longer visible on the page
+      await expect(
+        page.locator('h3:has-text("My Blog by Matti Luukkainen")')
+      ).not.toBeVisible();
     });
   });
 });
