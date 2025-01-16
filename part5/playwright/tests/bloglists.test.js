@@ -101,5 +101,57 @@ describe("Blog app", () => {
         page.locator('h3:has-text("My Blog by Matti Luukkainen")')
       ).not.toBeVisible();
     });
+
+    describe("when logged in as another user", () => {
+      beforeEach(async ({ page, request }) => {
+        // Create the second user (John Smith)
+        await request.post("/api/users", {
+          data: {
+            name: "John Smith",
+            username: "john",
+            password: "smith",
+          },
+        });
+      });
+
+      test("a blog can only be deleted by its creator", async ({ page }) => {
+        // Create a new blog as "Matti Luukkainen"
+        await createBlog(page, "Matti Luukkainen");
+
+        // Wait for the blog creation API response
+        const [response] = await Promise.all([
+          page.waitForResponse(
+            (response) =>
+              response.url().includes("/api/blogs") && response.status() === 200
+          ),
+          page.getByRole("button", { name: "Add Blog" }).click(),
+        ]);
+
+        // Ensure the blog creation was successful (API status check)
+        expect(response.status()).toBe(200);
+
+        // Check for success confirmation message
+        await expect(
+          page.getByText("My Blog by Matti Luukkainen has been added")
+        ).toBeVisible();
+
+        // Log out the current user (Matti Luukkainen)
+        await page.getByRole("button", { name: "Log Out" }).click();
+
+        // Log in as John Smith
+        await loginWith(page, "john", "smith");
+
+        // Verify John Smith is logged-in
+        await expect(page.getByText("John Smith is logged-in")).toBeVisible();
+
+        // Find Show Details button and click
+        await page.getByRole("button", { name: "Show Details" }).click();
+
+        // Verify that the "Delete" button is not visible (the user cannot delete another user's blog)
+        await expect(
+          page.locator('button:has-text("Delete")')
+        ).not.toBeVisible();
+      });
+    });
   });
 });
