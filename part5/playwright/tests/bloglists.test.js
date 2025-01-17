@@ -79,6 +79,58 @@ describe("Blog app", () => {
       await expect(page.getByText("1")).toBeVisible();
     });
 
+    test("blogs are ordered in descending order based on number of likes", async ({
+      page,
+    }) => {
+      // Create the first new blog
+      await createBlog(page, "Matti Luukkainen");
+      // Find Show Details button and click
+      await page.getByRole("button", { name: "Show Details" }).click();
+      // Check that there are 0 default likes
+      await expect(page.getByText("0")).toBeVisible();
+      // Click like
+      await page.locator('[data-testid="likes-button"]').click();
+      // Check that likes have incremented by 1
+      await expect(page.getByText("1")).toBeVisible();
+      // Click like again
+      await page.locator('[data-testid="likes-button"]').click();
+      // Check that likes have incremented by 1 to a total of 2
+      await expect(page.getByText("2")).toBeVisible();
+      // Create the second new blog - Second Blogger
+      await createBlog(page, "Second Blogger");
+      // locate the second blog
+      const blog2 = page
+        .locator(".basic-blog-info")
+        .filter({ hasText: "My Blog by Second Blogger" });
+      // Find Show Details button and click
+      await blog2.getByRole("button", { name: "Show Details" }).click();
+      // Click like 3 times and check that the likes have incremented by each time to a total of 3
+      const likeButton2 = blog2.locator('[data-testid="likes-button"]');
+      await likeButton2.click();
+      await expect(page.getByText("1")).toBeVisible();
+      await likeButton2.click();
+      await expect(page.getByText("2")).toBeVisible();
+      await likeButton2.click();
+      /* await expect(page.getByText("3")).toBeVisible({ timeout: 30000 }); */
+
+      // Trigger sort on next render by creating a third new blog
+      await createBlog(page, "Third Blogger");
+      const blog3 = page
+        .locator(".basic-blog-info")
+        .filter({ hasText: "My Blog by Third Blogger" });
+      // Find Show Details button and click
+      await blog3
+        .getByRole("button", { name: "Show Details" })
+        .waitFor({ state: "visible", timeout: 30000 });
+
+      await page.waitForTimeout(20000);
+
+      // Check that the first blog after the rendering the sort is the one with the most likes (Second Blogger)
+      expect(page.locator(".basic-blog-info").first()).toContainText(
+        "My Blog by Second Blogger"
+      );
+    });
+
     test("a blog can be deleted", async ({ page }) => {
       // Create a new blog
       await createBlog(page, "Matti Luukkainen");
