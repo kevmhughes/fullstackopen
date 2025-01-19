@@ -34,9 +34,13 @@ const reducer = (state = initialState, action) => {
           : { ...anecdote, votes: anecdote.votes + 1 }
       );
     }
+
     case "NEW_ANECDOTE": {
-      return [...state, asObject(action.data.content)];
+      const newAnecdote = asObject(action.data.content);
+      // concat() concatenates the new anecdote to the end of the current state array, creating a new array before sorting.
+      return state.concat(newAnecdote).sort((a, b) => b.votes - a.votes);
     }
+
     default:
       return state;
   }
