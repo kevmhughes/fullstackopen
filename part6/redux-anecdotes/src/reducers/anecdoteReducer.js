@@ -34,6 +34,9 @@ const reducer = (state = initialState, action) => {
           : { ...anecdote, votes: anecdote.votes + 1 }
       );
     }
+    case "NEW_ANECDOTE": {
+      return [...state, asObject(action.data.content)];
+    }
     default:
       return state;
   }
