@@ -20,11 +20,7 @@ const asObject = (anecdote) => {
 const initialState = anecdotesAtStart.map(asObject);
 
 const reducer = (state = initialState, action) => {
-  console.log("state now: ", state);
-  console.log("action", action);
-  // action.data?.id => optional chianing operator in JavaScript allows access to properties of an object that may be null or undefined, without causing a runtime error.
-  console.log("action.data.id", action.data?.id);
-
+  console.log('ACTION: ', action)
   switch (action.type) {
     case "VOTE": {
       const id = action.payload.id;
