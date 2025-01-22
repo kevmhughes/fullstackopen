@@ -27,7 +27,7 @@ const reducer = (state = initialState, action) => {
 
   switch (action.type) {
     case "VOTE": {
-      const id = action.data.id;
+      const id = action.payload.id;
       return state.map((anecdote) =>
         anecdote.id !== id
           ? anecdote
@@ -36,7 +36,7 @@ const reducer = (state = initialState, action) => {
     }
 
     case "NEW_ANECDOTE": {
-      const newAnecdote = asObject(action.data.content);
+      const newAnecdote = asObject(action.payload.content);
       // concat() concatenates the new anecdote to the end of the current state array, creating a new array before sorting.
       return state.concat(newAnecdote).sort((a, b) => b.votes - a.votes);
     }
@@ -44,6 +44,24 @@ const reducer = (state = initialState, action) => {
     default:
       return state;
   }
+};
+
+// action creator - function that returns an action object
+export const createAnecdote = (content) => {
+  // action object - has a type property and an optional payload property
+  return {
+    type: "NEW_ANECDOTE",
+    payload: { content }, // data
+  };
+};
+
+// action creator - function that returns an action object
+export const voteAnecdote = (id) => {
+  // action object - has a type property and an optional payload property
+  return {
+    type: "VOTE",
+    payload: { id }, // data
+  };
 };
 
 export default reducer;
