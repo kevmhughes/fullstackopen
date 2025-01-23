@@ -5,10 +5,10 @@ import AnecdoteFilter from "./components/AnecdoteFilter";
 const App = () => {
   return (
     <div className="container">
-      <h2>Anecdotes</h2>
+      <h1 style={{textAlign: "center", marginTop: "1rem"}}>ANECDOTES</h1>
       <AnecdoteFilter />
-      <AnecdoteList />
       <AnecdoteForm />
+      <AnecdoteList />
     </div>
   );
 };
