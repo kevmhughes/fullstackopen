@@ -9,9 +9,9 @@ anecdoteService.getAll().then((anecdotes) => {
   anecdotes.forEach((anecdote) => {
     store.dispatch(appendAnecdote(anecdote));
   });
-})
+});
 
-console.log("store - main.jsx", store.getState())
+console.log("store - main.jsx", store.getState());
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>

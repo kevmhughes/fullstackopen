@@ -13,16 +13,18 @@ const AnecdoteForm = () => {
     event.target.anecdote.value = "";
     // Check if the content is at least 5 characters long
     if (content.length < 5) {
-      dispatch(setNotification("Anecdote must be at least 5 characters long.", "error"));
+      dispatch(
+        setNotification("Anecdote must be at least 5 characters long.", "error")
+      );
 
       // Clear the notification after a timeout
       setTimeout(() => {
         dispatch(clearNotification());
       }, 5000);
     } else {
-     /*  dispatch(createAnecdote(content)); */
-      const newAnecdote = await anecdoteService.createAnecdote(content)
-      dispatch(createAnecdote(newAnecdote))
+      /*  dispatch(createAnecdote(content)); */
+      const newAnecdote = await anecdoteService.createAnecdote(content);
+      dispatch(createAnecdote(newAnecdote));
       showNotificationForNewAnecdote(content);
     }
   };

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect } from "react";
 import AnecdoteList from "./components/AnecdoteList";
 import AnecdoteForm from "./components/AnecdoteForm";
 import AnecdoteFilter from "./components/AnecdoteFilter";
@@ -8,12 +8,12 @@ import { useDispatch } from "react-redux";
 import { setAnecdotes } from "./reducers/anecdoteReducer";
 
 const App = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   useEffect(() => {
     anecdoteService
-      .getAll().then(anecdotes => dispatch(setAnecdotes(anecdotes)))
-  }, [])
-
+      .getAll()
+      .then((anecdotes) => dispatch(setAnecdotes(anecdotes)));
+  }, []);
 
   return (
     <div className="container">
