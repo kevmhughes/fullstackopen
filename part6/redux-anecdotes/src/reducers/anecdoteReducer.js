@@ -1,7 +1,7 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 
-const anecdotesAtStart = [
-  "If it hurts, do it more often",
+/* const anecdotesAtStart = [
+  "If it hurts, do it more often.",
   "Adding manpower to a late software project makes it later!",
   "The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.",
   "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
@@ -20,6 +20,9 @@ const asObject = (anecdote) => {
 };
 
 const initialState = anecdotesAtStart.map(asObject);
+ */
+
+const initialState = [];
 
 const anecdoteSlice = createSlice({
   name: "anecdotes",
@@ -27,8 +30,7 @@ const anecdoteSlice = createSlice({
   reducers: {
     createAnecdote(state, action) {
       const content = action.payload;
-      const newAnecdote = asObject(content);
-      state.unshift(newAnecdote);
+      state.unshift(content);
       state.sort((a, b) => b.votes - a.votes);
     },
     voteAnecdote(state, action) {
@@ -39,8 +41,14 @@ const anecdoteSlice = createSlice({
       }
       console.log("redux toolkit console.log", current(state));
     },
+    appendAnecdote(state, action) {
+      state.push(action.payload);
+    },
+    setAnecdotes(state, action) {
+      return action.payload;
+    },
   },
 });
 
-export const { createAnecdote, voteAnecdote } = anecdoteSlice.actions;
+export const { createAnecdote, voteAnecdote, appendAnecdote, setAnecdotes} = anecdoteSlice.actions;
 export default anecdoteSlice.reducer;
