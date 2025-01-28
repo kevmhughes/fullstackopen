@@ -10,3 +10,9 @@ In this section, the learner will become familiar with the practical aspects of 
 
 In this part, the learner will familiarize themselves with the React library, which will be used to write the code that runs in the browser. They will also explore some important features of JavaScript that are essential for understanding React and working with it effectively.
 
+## Part 1: Communicating with the Server
+
+In this section, the learner will continue their introduction to React. First, they will explore how to render a data collection, such as a list of names, to the screen. Afterward, they will examine how a user can submit data to a React application through HTML forms. The focus will then shift to how JavaScript code in the browser can fetch and handle data stored on a remote backend server. Finally, the learner will take a brief look at a few simple methods for adding CSS styles to their React applications.
+
+
+
