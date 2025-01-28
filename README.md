@@ -4,7 +4,7 @@ The **Full Stack Open** course, offered by the University of Helsinki, provides 
 
 ## Part 0: Fundamentals of Web Apps
 
-In this section, the learner will become familiar with the practical aspects of taking the course. Following that, they will be provided with an overview of the fundamental concepts of web development. Additionally, there will be a discussion on the significant advances in web application development over the past few decades, highlighting key innovations and technological progress.
+In this part, the learner will become familiar with the practical aspects of taking the course. Following that, they will be provided with an overview of the fundamental concepts of web development. Additionally, there will be a discussion on the significant advances in web application development over the past few decades, highlighting key innovations and technological progress.
 
 ## Part 1: Introduction to React
 
@@ -12,7 +12,10 @@ In this part, the learner will familiarize themselves with the React library, wh
 
 ## Part 2: Communicating with the Server
 
-In this section, the learner will continue their introduction to React. First, they will explore how to render a data collection, such as a list of names, to the screen. Afterward, they will examine how a user can submit data to a React application through HTML forms. The focus will then shift to how JavaScript code in the browser can fetch and handle data stored on a remote backend server. Finally, the learner will take a brief look at a few simple methods for adding CSS styles to their React applications.
+In this part, the learner will continue their introduction to React. First, they will explore how to render a data collection, such as a list of names, to the screen. Afterward, they will examine how a user can submit data to a React application through HTML forms. The focus will then shift to how JavaScript code in the browser can fetch and handle data stored on a remote backend server. Finally, the learner will take a brief look at a few simple methods for adding CSS styles to their React applications.
 
+## Part 3: Programming a server with NodeJS and Express
+
+In this part, the focus shifts to the backend, specifically the implementation of functionality on the server side of the stack. The team will create a simple REST API using Node.js in conjunction with the Express library. Data for the application will be stored in a MongoDB database, ensuring smooth interaction between the server and the data layer. Once the backend is functional, the team will proceed to deploy the application to the internet, making it accessible for use.
 
 
