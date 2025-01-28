@@ -5,3 +5,8 @@ The **Full Stack Open** course, offered by the University of Helsinki, provides 
 ## Part 0: Fundamentals of Web Apps
 
 In this section, the learner will become familiar with the practical aspects of taking the course. Following that, they will be provided with an overview of the fundamental concepts of web development. Additionally, there will be a discussion on the significant advances in web application development over the past few decades, highlighting key innovations and technological progress.
+
+## Part 1: Introduction to React
+
+In this part, the learner will familiarize themselves with the React library, which will be used to write the code that runs in the browser. They will also explore some important features of JavaScript that are essential for understanding React and working with it effectively.
+
