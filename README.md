@@ -18,7 +18,7 @@ In this part, the learner will continue their introduction to React. First, they
 
 In this part, the focus shifts to the backend, specifically the implementation of functionality on the server side of the stack. The team will create a simple REST API using Node.js in conjunction with the Express library. Data for the application will be stored in a MongoDB database, ensuring smooth interaction between the server and the data layer. Once the backend is functional, the team will proceed to deploy the application to the internet, making it accessible for use.
 
-## Part 4: Testing Express servers, user administration
+## Part 4: Testing Express servers, User Administration
 
 In this part, the focus shifts to continuing work on the backend. The first major task will be writing unit and integration tests to ensure the reliability and correctness of the backend components. Once testing is complete, attention will turn to implementing user authentication and authorization, securing access to the application’s resources and ensuring that only authorized users can perform certain actions.
 
