@@ -1,7 +1,6 @@
 import { useDispatch } from "react-redux";
 import { createAnecdote } from "../reducers/anecdoteReducer";
-import { setNotification } from "../reducers/notificationReducer";
-import { clearNotification } from "../reducers/notificationReducer";
+import { setNotificationWithTimeout } from "../reducers/notificationReducer";
 
 const AnecdoteForm = () => {
   const dispatch = useDispatch();
@@ -12,27 +11,18 @@ const AnecdoteForm = () => {
     event.target.anecdote.value = "";
     // Check if the content is at least 5 characters long
     if (content.length < 5) {
+      // Use the new setNotificationWithTimeout with a duration of 5 seconds for error message
       dispatch(
-        setNotification("Anecdote must be at least 5 characters long.", "error")
+        setNotificationWithTimeout(
+          "Anecdote must be at least 5 characters long.",
+          5
+        )
       );
-
-      // Clear the notification after a timeout
-      setTimeout(() => {
-        dispatch(clearNotification());
-      }, 5000);
     } else {
       dispatch(createAnecdote(content));
-      showNotificationForNewAnecdote(content);
+      // Use setNotificationWithTimeout to show a success message
+      dispatch(setNotificationWithTimeout(`"${content}" has been added.`, 5));
     }
-  };
-
-  const showNotificationForNewAnecdote = (content) => {
-    dispatch(setNotification(`"${content}" has been added.`));
-
-    // Clear the notification after a timeout
-    setTimeout(() => {
-      dispatch(clearNotification());
-    }, 5000);
   };
 
   return (

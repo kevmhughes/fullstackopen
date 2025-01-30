@@ -9,7 +9,7 @@ const notificationSlice = createSlice({
   initialState,
   reducers: {
     setNotification(state, action) {
-      state.message = action.payload;
+      state.message = action.payload.message;
     },
     clearNotification(state) {
       state.message = "";
@@ -17,5 +17,20 @@ const notificationSlice = createSlice({
   },
 });
 
+let timeoutId;
+
 export const { setNotification, clearNotification } = notificationSlice.actions;
+
+export const setNotificationWithTimeout = (message, duration) => (dispatch) => {
+  if (timeoutId) {
+    clearTimeout(timeoutId);
+  }
+
+  dispatch(setNotification({ message }));
+
+  timeoutId = setTimeout(() => {
+    dispatch(clearNotification());
+  }, duration * 1000); // Convert seconds to milliseconds
+};
+
 export default notificationSlice.reducer;
