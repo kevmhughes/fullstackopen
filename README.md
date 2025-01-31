@@ -22,3 +22,6 @@ In this part, the focus shifts to the backend, specifically the implementation o
 
 In this part, the focus shifts to continuing work on the backend. The first major task will be writing unit and integration tests to ensure the reliability and correctness of the backend components. Once testing is complete, attention will turn to implementing user authentication and authorization, securing access to the application’s resources and ensuring that only authorized users can perform certain actions.
 
+## Part 5: Testing React Apps
+
+In this section, the focus shifts back to the frontend. The first step is to explore various options for testing React code, ensuring the reliability and robustness of the application's user interface. Alongside testing, token-based authentication will be implemented, allowing users to securely log in and interact with the application. This authentication mechanism will involve generating and managing tokens that are used for verifying user identity and granting access to protected resources within the app.
