@@ -1,10 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AnecdoteForm from "./components/AnecdoteForm";
 import Notification from "./components/Notification";
-import { getAnecdotes, createAnecdote } from "./requests";
+import { getAnecdotes, createAnecdote, voteAnecdote } from "./requests";
 
 const App = () => {
   const queryClient = useQueryClient();
+
+  const updateAnecdoteMutation = useMutation({
+    mutationFn: voteAnecdote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["anecdotes"] });
+    },
+  });
+
+  const increaseVotes = (anecdote) => {
+    const updatedAnecdote = { ...anecdote, votes: anecdote.votes + 1 };
+    updateAnecdoteMutation.mutate(updatedAnecdote);
+  };
 
   const newNoteMutation = useMutation({
     mutationFn: createAnecdote,
@@ -36,7 +48,8 @@ const App = () => {
   const anecdotes = result.data;
 
   const handleVote = (anecdote) => {
-    console.log("vote");
+    console.log("anecdote", anecdote);
+    increaseVotes(anecdote);
   };
 
   return (
@@ -47,11 +60,20 @@ const App = () => {
       <AnecdoteForm onSubmit={addAnecdote} />
 
       {anecdotes.map((anecdote) => (
-        <div key={anecdote.id}>
+        <div key={anecdote.id} style={{ marginBottom: "1rem" }}>
           <div>{anecdote.content}</div>
-          <div>
-            has {anecdote.votes}
+          <div
+            style={{
+              display: "flex",
+              gap: "1rem",
+              alignItems: "center",
+              marginTop: "0.5rem",
+            }}
+          >
             <button onClick={() => handleVote(anecdote)}>vote</button>
+            <div>
+              {anecdote.votes} {anecdote.votes === 1 ? "vote" : "votes"}
+            </div>
           </div>
         </div>
       ))}
