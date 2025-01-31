@@ -1,15 +1,23 @@
-import { useContext } from "react";
-import NotificationContext from "./NotificationContext";
+import { useNotificationDispatch } from "../NotificationContext";
 
 const AnecdoteForm = ({ onSubmit }) => {
-  const { dispatchNotification } = useContext(NotificationContext); // Accessing dispatchNotification from context
+  const dispatchNotification = useNotificationDispatch();
 
   const onCreate = (event) => {
     event.preventDefault();
     const content = event.target.anecdote.value;
     event.target.anecdote.value = "";
     if (content.length < 5) {
-      return alert("Anecdote must be at least 5 characters long.");
+      dispatchNotification({
+        type: "SET_NOTIFICATION",
+        payload: "Anecdote must be at least 5 characters long.",
+      });
+      setTimeout(() => {
+        dispatchNotification({
+          type: "CLEAR_NOTIFICATION",
+        });
+      }, 5000);
+      return;
     }
     onSubmit(content);
     dispatchNotification({

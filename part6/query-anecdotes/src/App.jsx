@@ -1,29 +1,13 @@
-import { useReducer } from "react";
-import NotificationContext from "./components/NotificationContext";
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AnecdoteForm from "./components/AnecdoteForm";
 import Notification from "./components/Notification";
 import { getAnecdotes, createAnecdote, voteAnecdote } from "./requests";
-
-const notificationReducer = (state, action) => {
-  switch (action.type) {
-    case "SET_NOTIFICATION":
-      return action.payload;
-    case "CLEAR_NOTIFICATION":
-      return null;
-    default:
-      return state;
-  }
-};
+import { useNotificationDispatch } from "./NotificationContext";
 
 const App = () => {
   const queryClient = useQueryClient();
 
-  const [notification, dispatchNotification] = useReducer(
-    notificationReducer,
-    null
-  );
+  const dispatchNotification = useNotificationDispatch();
 
   const updateAnecdoteMutation = useMutation({
     mutationFn: voteAnecdote,
@@ -88,35 +72,31 @@ const App = () => {
   };
 
   return (
-    <NotificationContext.Provider
-      value={{ notification, dispatchNotification }}
-    >
-      <div className="container">
-        <h3 style={{ marginTop: "1rem" }}>Anecdote app</h3>
+    <div className="container">
+      <h3 style={{ marginTop: "1rem" }}>Anecdote app</h3>
 
-        <Notification />
-        <AnecdoteForm onSubmit={addAnecdote} />
+      <Notification />
+      <AnecdoteForm onSubmit={addAnecdote} />
 
-        {anecdotes.map((anecdote) => (
-          <div key={anecdote.id} style={{ marginBottom: "1rem" }}>
-            <div>{anecdote.content}</div>
-            <div
-              style={{
-                display: "flex",
-                gap: "1rem",
-                alignItems: "center",
-                marginTop: "0.5rem",
-              }}
-            >
-              <button onClick={() => handleVote(anecdote)}>vote</button>
-              <div>
-                {anecdote.votes} {anecdote.votes === 1 ? "vote" : "votes"}
-              </div>
+      {anecdotes.map((anecdote) => (
+        <div key={anecdote.id} style={{ marginBottom: "1rem" }}>
+          <div>{anecdote.content}</div>
+          <div
+            style={{
+              display: "flex",
+              gap: "1rem",
+              alignItems: "center",
+              marginTop: "0.5rem",
+            }}
+          >
+            <button onClick={() => handleVote(anecdote)}>vote</button>
+            <div>
+              {anecdote.votes} {anecdote.votes === 1 ? "vote" : "votes"}
             </div>
           </div>
-        ))}
-      </div>
-    </NotificationContext.Provider>
+        </div>
+      ))}
+    </div>
   );
 };
 
