@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
+import { useParams } from "react-router-dom";
+
 import { useState } from "react";
 
 const Menu = () => {
@@ -26,7 +28,9 @@ const AnecdoteList = ({ anecdotes }) => (
     <h2>Anecdotes</h2>
     <ul>
       {anecdotes.map((anecdote) => (
-        <li key={anecdote.id}>{anecdote.content}</li>
+        <li key={anecdote.id}>
+          <Link to={`/anecdotes/${anecdote.id}`}> {anecdote.content}</Link>
+        </li>
       ))}
     </ul>
   </div>
@@ -141,6 +145,18 @@ const App = () => {
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
 
+  const Anecdote = ({ anecdotes }) => {
+    console.log("params", useParams().id);
+    const { id } = useParams();
+    const anecdote = anecdoteById(Number(id));
+
+    return (
+      <div>
+        <h2>{anecdote.content}</h2>
+      </div>
+    );
+  };
+
   const vote = (id) => {
     const anecdote = anecdoteById(id);
 
@@ -157,6 +173,10 @@ const App = () => {
       <h1>Software anecdotes</h1>
       <Menu />
       <Routes>
+        <Route
+          path="/anecdotes/:id"
+          element={<Anecdote anecdotes={anecdotes} />}
+        />
         <Route
           path="/anecdotes"
           element={<AnecdoteList anecdotes={anecdotes} />}
