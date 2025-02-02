@@ -1,6 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-
-import { useParams } from "react-router-dom";
+import { Routes, Route, Link, useNavigate, useMatch } from "react-router-dom";
 
 import { useState } from "react";
 
@@ -48,7 +46,7 @@ const About = () => (
       more general than the brief tale itself, such as to characterize a person
       by delineating a specific quirk or trait, to communicate an abstract idea
       about a person, place, or thing through the concrete details of a short
-      narrative. An anecdote is "a story with a point."
+      narrative. An anecdote is &quot;a story with a point.&quot;
     </em>
 
     <p>
@@ -74,6 +72,8 @@ const CreateNew = (props) => {
   const [author, setAuthor] = useState("");
   const [info, setInfo] = useState("");
 
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
     props.addNew({
@@ -82,6 +82,7 @@ const CreateNew = (props) => {
       info,
       votes: 0,
     });
+    navigate("/anecdotes");
   };
 
   return (
@@ -137,18 +138,26 @@ const App = () => {
   ]);
 
   const [notification, setNotification] = useState("");
+  console.log("notification", notification);
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
+    setNotification(`${anecdote.content} has been created!`);
+    setTimeout(() => {
+      setNotification("");
+    }, "5000");
   };
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
 
   const Anecdote = ({ anecdotes }) => {
-    console.log("params", useParams().id);
-    const { id } = useParams();
-    const anecdote = anecdoteById(Number(id));
+    const match = useMatch("/anecdotes/:id");
+    console.log("match", match.params.id);
+
+    const anecdote = match
+      ? anecdotes.find((anecdote) => anecdote.id === Number(match.params.id))
+      : null;
 
     return (
       <div>
@@ -169,9 +178,22 @@ const App = () => {
   };
 
   return (
-    <Router>
+    <div className="container">
       <h1>Software anecdotes</h1>
       <Menu />
+      {notification.length > 0 && (
+        <div
+          style={{
+            border: "solid, 1px, red",
+            padding: ".5rem",
+            borderRadius: "5px",
+            marginTop: "1rem",
+            marginBottom: "1rem",
+          }}
+        >
+          {notification}
+        </div>
+      )}
       <Routes>
         <Route
           path="/anecdotes/:id"
@@ -185,7 +207,7 @@ const App = () => {
         <Route path="/about" element={<About />} />
       </Routes>
       <Footer />
-    </Router>
+    </div>
   );
 };
 
