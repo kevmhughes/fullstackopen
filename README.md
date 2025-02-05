@@ -25,3 +25,7 @@ In this part, the focus shifts to continuing work on the backend. The first majo
 ## Part 5: Testing React Apps
 
 In this section, the focus shifts back to the frontend. The first step is to explore various options for testing React code, ensuring the reliability and robustness of the application's user interface. Alongside testing, token-based authentication will be implemented, allowing users to securely log in and interact with the application. This authentication mechanism will involve generating and managing tokens that are used for verifying user identity and granting access to protected resources within the app.
+
+## Part 6: Advanced State Management 
+
+As applications grow larger, placing the application's state and state logic directly inside React components becomes less manageable. To address this, state management should be moved outside of React components. One popular solution for managing the state of React applications is the Redux library. In this context, the lightweight version of Redux that is directly supported by React is introduced. This version utilizes the React Context API and the useReducer hook. Additionally, the React Query library is explored, which simplifies the management of server state. By using these tools, developers can streamline their state management strategies, improving the scalability and maintainability of larger applications.
