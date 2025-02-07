@@ -75,6 +75,10 @@ const CreateNew = (props) => {
   const author = useField("text");
   const info = useField("text");
 
+  const { reset: contentReset, ...contentProps } = content;
+  const { reset: authorReset, ...authorProps } = author;
+  const { reset: infoReset, ...infoProps } = info;
+
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -94,35 +98,29 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input
-            type={content.type}
-            value={content.value}
-            onChange={content.onChange}
-          />
+          <input {...contentProps} />
         </div>
         <div>
           author
-          <input
-            type={author.type}
-            value={author.value}
-            onChange={author.onChange}
-          />
+          <input {...authorProps} />
         </div>
         <div>
           url for more info
-          <input type={info.type} value={info.value} onChange={info.onChange} />
+          <input {...infoProps} />
         </div>
-        <button>create</button>
-        <button
-          type="button"
-          onClick={() => {
-            content.reset();
-            author.reset();
-            info.reset();
-          }}
-        >
-          Reset
-        </button>
+        <div>
+          <button style={{ marginRight: "1rem" }}>create</button>
+          <button
+            type="button"
+            onClick={() => {
+              contentReset();
+              authorReset();
+              infoReset();
+            }}
+          >
+            Reset
+          </button>
+        </div>
       </form>
     </div>
   );
